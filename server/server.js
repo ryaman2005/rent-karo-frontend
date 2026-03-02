@@ -1,13 +1,21 @@
+const authRoutes = require("./routes/authRoutes");
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
+const protect = require("./middleware/authMiddleware");
 
+app.get("/api/profile", protect, (req, res) => {
+  res.json({
+    message: "Protected route accessed",
+    userId: req.user,
+  });
+});
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/auth", authRoutes);
 // Debugging: Check if MONGO_URI is loaded
 console.log("Attempting to connect to DB...");
 
