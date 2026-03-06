@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import products from "../data/products";
+import axios from "axios";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -15,6 +16,30 @@ function ProductDetails() {
     );
   }
 
+  const handleRent = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "http://localhost:8000/api/rentals",
+      {
+        productName: product.name,
+        price: product.price,
+        deposit: product.deposit,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    alert("Product rented successfully!");
+  } catch (error) {
+  console.log("RENT ERROR:", error.response?.data || error);
+  alert(error.response?.data?.message || "Rent failed");
+}
+};
   return (
     <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-6">
       <div className="bg-slate-900 rounded-2xl p-10 max-w-3xl w-full shadow-xl">
@@ -37,9 +62,14 @@ function ProductDetails() {
         <p className="text-indigo-400 text-2xl">{product.price}</p>
         <p className="text-gray-400 mb-6">{product.deposit}</p>
 
-        <button className="w-full bg-indigo-600 py-4 rounded-xl hover:bg-indigo-500 transition text-lg">
-          Confirm Rent
-        </button>
+        <button
+  onClick={handleRent}
+  className="w-full bg-indigo-600 py-4 rounded-xl hover:bg-indigo-500 transition text-lg"
+>
+  Confirm Rent
+</button>
+
+
 
       </div>
     </div>
