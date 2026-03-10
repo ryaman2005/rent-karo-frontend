@@ -13,15 +13,52 @@ router.get("/", async (req,res)=>{
 });
 
 
+// Get products listed by logged user
+router.get("/my-listings/:userId", async (req,res)=>{
+
+  try{
+
+    const products = await Product.find({ owner: req.params.userId });
+
+    res.json(products);
+
+  }catch(error){
+
+    res.status(500).json({message:"Server error"});
+
+  }
+
+});
+
+
+// Get single product
+router.get("/:id", async (req,res)=>{
+
+  try{
+
+    const product = await Product.findById(req.params.id);
+
+    if(!product){
+      return res.status(404).json({message:"Product not found"});
+    }
+
+    res.json(product);
+
+  }catch(error){
+
+    res.status(500).json({message:"Server error"});
+
+  }
+
+});
+
+
 // Add product
 router.post("/", async (req,res)=>{
 
   try{
 
-    const product = await Product.create({
-  ...req.body,
-  owner: req.user
-});
+    const product = await Product.create(req.body);
 
     res.status(201).json(product);
 
@@ -43,26 +80,5 @@ router.delete("/:id", async (req,res)=>{
 
 });
 
-// Get single product
-// Get single product
-router.get("/:id", async (req, res) => {
 
-  try {
-
-    const product = await Product.findById(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.json(product);
-
-  } catch (error) {
-
-    console.log(error);   // 👈 important
-
-    res.status(500).json({ message: "Server error" });
-  }
-
-});
 module.exports = router;

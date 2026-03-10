@@ -34,6 +34,9 @@ function Navbar() {
         <Link to="/list-item">
 List an Item
 </Link>
+<Link to="/my-listings">
+  My Listings
+</Link>
         {user ? (
           <>
             <span className="text-gray-300">

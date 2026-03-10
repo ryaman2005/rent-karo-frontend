@@ -11,8 +11,7 @@ const protect = require("./middleware/authMiddleware");
 
 const app = express();
 
-
-// ✅ CORS FIRST
+// ✅ CORS
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -22,18 +21,13 @@ app.use(
   })
 );
 
-app.options("*", cors());
-
-
-// ✅ JSON middleware
+// ✅ Middleware
 app.use(express.json());
 
-
-// ✅ Routes AFTER middleware
+// ✅ Routes
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/rentals", rentalRoutes);
-
 
 // Protected route
 app.get("/api/profile", protect, (req, res) => {
@@ -43,7 +37,6 @@ app.get("/api/profile", protect, (req, res) => {
   });
 });
 
-
 // DB connection
 console.log("Attempting to connect to DB...");
 
@@ -51,12 +44,10 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("DB Error:", err));
 
-
 // Test route
 app.get("/", (req,res)=>{
   res.send("RentEase API running");
 });
-
 
 const PORT = 8000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
