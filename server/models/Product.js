@@ -30,8 +30,19 @@ const productSchema = new mongoose.Schema({
   owner:{
     type: mongoose.Schema.Types.ObjectId,
     ref:"User"
+  },
+
+  address: {
+    type: String,
+  },
+
+  location: {
+    type: { type: String, enum: ['Point'] },
+    coordinates: { type: [Number] } // [longitude, latitude]
   }
 
 },{ timestamps:true });
+
+productSchema.index({ location: "2dsphere" });
 
 module.exports = mongoose.model("Product", productSchema);

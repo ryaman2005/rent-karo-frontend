@@ -13,7 +13,21 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false, // optional for Google OAuth users
+      default: null,
+    },
+    role: {
+      type: String,
+      enum: ["renter", "owner"],
+      default: "renter",
+    },
+    googleId: {
+      type: String,
+      default: null,
+    },
+    avatar: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }

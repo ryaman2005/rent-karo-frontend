@@ -1,15 +1,37 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
+const protect = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 
-// Get all products
-router.get("/", async (req,res)=>{
+// Get all products (with optional distance filtering)
+router.get("/", async (req, res) => {
+  try {
+    const { lat, lng, radius = 5, category, search } = req.query;
+    let query = {};
 
-  const products = await Product.find();
+    if (category && category !== "All") query.category = category;
+    if (search) query.name = { $regex: search, $options: "i" };
 
-  res.json(products);
+    // Geospatial filter (radius in KM)
+    if (lat && lng) {
+      query.location = {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [parseFloat(lng), parseFloat(lat)] // MongoDB needs [lng, lat]
+          },
+          $maxDistance: parseFloat(radius) * 1000 // Convert KM to meters
+        }
+      };
+    }
 
+    const products = await Product.find(query).sort({createdAt: -1});
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
 
@@ -36,7 +58,7 @@ router.get("/:id", async (req,res)=>{
 
   try{
 
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("owner", "name avatar createdAt");
 
     if(!product){
       return res.status(404).json({message:"Product not found"});
@@ -53,21 +75,46 @@ router.get("/:id", async (req,res)=>{
 });
 
 
-// Add product
-router.post("/", async (req,res)=>{
+// ─── Create Product (protected + file upload) ───
+router.post("/", protect, (req, res) => {
+  upload.single("image")(req, res, async (multerErr) => {
+    if (multerErr) {
+      console.error("MULTER/CLOUDINARY ERROR:", multerErr);
+      return res.status(500).json({ message: "Upload failed: " + multerErr.message });
+    }
+    
+    try {
+      console.log("INCOMING LISTING:", req.body);
+      const { name, price, deposit, category, lat, lng, address } = req.body;
 
-  try{
+      if (!name || !price || !deposit || !req.file) {
+        return res.status(400).json({ message: "All fields and an image file are required" });
+      }
 
-    const product = await Product.create(req.body);
+    let locationData = undefined;
+    if (lat && lng) {
+      locationData = {
+        type: "Point",
+        coordinates: [parseFloat(lng), parseFloat(lat)]
+      };
+    }
+
+    const product = await Product.create({
+      name,
+      price,
+      deposit,
+      image: req.file.path, // Cloudinary secure URL
+      category: category || "General",
+      owner: req.user,
+      address: address || "",
+      ...(locationData && { location: locationData })
+    });
 
     res.status(201).json(product);
-
-  }catch(error){
-
-    res.status(500).json({message:"Server error"});
-
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-
+  }); // End of upload.single closure
 });
 
 

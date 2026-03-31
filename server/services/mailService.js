@@ -1,0 +1,88 @@
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+/**
+ * Send an Email confirmation to the renter.
+ */
+async function sendRentalConfirmation({ toEmail, renterName, productName, duration, price, deposit }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log("[Email] Credentials not configured — skipping message.");
+    return;
+  }
+
+  if (!toEmail) return;
+
+  const totalRent = parseInt(price) * duration;
+  const grandTotal = totalRent + parseInt(deposit);
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+      <h2 style="color: #4f46e5;">✅ Rental Confirmed</h2>
+      <p>Hi <strong>${renterName}</strong>,</p>
+      <p>Your rental request has been confirmed by the owner!</p>
+
+      <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 5px 0;">🛒 <strong>Item:</strong> ${productName}</p>
+        <p style="margin: 5px 0;">📅 <strong>Duration:</strong> ${duration} month${duration > 1 ? "s" : ""}</p>
+        <p style="margin: 5px 0;">💰 <strong>Monthly Rent:</strong> ₹${price}/mo</p>
+        <p style="margin: 5px 0;">💳 <strong>Total Rent:</strong> ₹${totalRent}</p>
+        <p style="margin: 5px 0;">🔒 <strong>Security Deposit:</strong> ₹${deposit} (refundable)</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 15px 0;"/>
+        <p style="margin: 5px 0; font-size: 18px;"><strong>Total Due:</strong> ₹${grandTotal}</p>
+      </div>
+
+      <p>Thank you for using <strong>rentKaro</strong>. Return the item anytime to get your deposit back.</p>
+      <p style="color: #64748b; font-size: 12px; margin-top: 30px;">— Team rentKaro</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `Rental Confirmed: ${productName}`,
+      html,
+    });
+    console.log(`[Email] Confirmation sent to ${toEmail}`);
+  } catch (err) {
+    console.error("[Email] Failed to send message:", err.message);
+  }
+}
+
+/**
+ * Send an Email rejection notice to the renter.
+ */
+async function sendRentalRejection({ toEmail, renterName, productName }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+      <h2 style="color: #ef4444;">❌ Rental Update</h2>
+      <p>Hi <strong>${renterName}</strong>,</p>
+      <p>Unfortunately, the owner was unable to confirm your rental request for <strong>${productName}</strong> at this time.</p>
+      <p>Please browse other available items on our platform.</p>
+      <p style="color: #64748b; font-size: 12px; margin-top: 30px;">— Team rentKaro</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `Rental Update: ${productName}`,
+      html,
+    });
+    console.log(`[Email] Rejection sent to ${toEmail}`);
+  } catch (err) {
+    console.error("[Email] Failed to send rejection:", err.message);
+  }
+}
+
+module.exports = { sendRentalConfirmation, sendRentalRejection };

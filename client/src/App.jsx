@@ -9,7 +9,7 @@ import MyRentals from "./pages/MyRentals";
 import Admin from "./pages/Admin";
 import ListItem from "./pages/ListItem";
 import MyListings from "./pages/MyListings";
-
+import Inbox from "./pages/Inbox";
 
 function App() {
   return (
@@ -24,6 +24,7 @@ function App() {
         <Route path="/admin" element={<Admin/>}/>
         <Route path="/list-item" element={<ListItem />} />
         <Route path="/my-listings" element={<MyListings />} />
+        <Route path="/inbox" element={<Inbox />} />
       </Routes>
     </>
   );

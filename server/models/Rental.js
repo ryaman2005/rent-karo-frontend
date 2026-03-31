@@ -7,6 +7,16 @@ const rentalSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     productName: {
       type: String,
       required: true,
@@ -18,6 +28,17 @@ const rentalSchema = new mongoose.Schema(
     deposit: {
       type: String,
       required: true,
+    },
+    duration: {
+      type: Number,
+      default: 1, // months
+      min: 1,
+      max: 24,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "confirmed", "rejected"],
+      default: "pending",
     },
   },
   { timestamps: true }

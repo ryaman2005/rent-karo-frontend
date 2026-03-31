@@ -1,53 +1,101 @@
 require("dotenv").config();
 
 const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
 const rentalRoutes = require("./routes/rentalRoutes");
 const productRoutes = require("./routes/productRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 const protect = require("./middleware/authMiddleware");
 
 const app = express();
+const server = http.createServer(app);
 
-// ✅ CORS
-app.use(
-  cors({
+// ── Socket.io setup ──────────────────────────────────
+const io = new Server(server, {
+  cors: {
     origin: "http://localhost:5173",
-    methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-    allowedHeaders: ["Content-Type","Authorization"],
-    credentials: true
-  })
-);
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true,
+  },
+});
 
-// ✅ Middleware
-app.use(express.json());
+// Map userId → socketId for targeted emission
+const userSockets = new Map();
 
-// ✅ Routes
-app.use("/api/products", productRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/rentals", rentalRoutes);
+io.on("connection", (socket) => {
+  console.log("[Socket] Client connected:", socket.id);
 
-// Protected route
-app.get("/api/profile", protect, (req, res) => {
-  res.json({
-    message: "Protected route accessed",
-    userId: req.user,
+  // Client sends their userId after connecting
+  socket.on("authenticate", (userId) => {
+    if (userId) {
+      userSockets.set(userId.toString(), socket.id);
+      console.log(`[Socket] User ${userId} mapped to socket ${socket.id}`);
+    }
+  });
+
+  // Join a specific rental chat room
+  socket.on("join_chat", (rentalId) => {
+    socket.join(rentalId);
+    console.log(`[Socket] Socket ${socket.id} joined chat room: ${rentalId}`);
+  });
+
+  // Broadcast message to everyone in the chat room
+  socket.on("send_message", (data) => {
+    // data: { rentalId, text, sender: {}, receiver: {}, createdAt }
+    io.to(data.rentalId).emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    // Remove the mapping for this socket
+    for (const [uid, sid] of userSockets.entries()) {
+      if (sid === socket.id) {
+        userSockets.delete(uid);
+        console.log(`[Socket] User ${uid} disconnected`);
+        break;
+      }
+    }
   });
 });
 
-// DB connection
-console.log("Attempting to connect to DB...");
+// Export io and userSockets so routes can emit events
+app.set("io", io);
+app.set("userSockets", userSockets);
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log("DB Error:", err));
+// ── CORS ─────────────────────────────────────────────
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
-// Test route
-app.get("/", (req,res)=>{
-  res.send("RentEase API running");
+app.use(express.json());
+
+// ── Routes ────────────────────────────────────────────
+app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/rentals", rentalRoutes);
+app.use("/api/chat", chatRoutes);
+
+// Protected profile route
+app.get("/api/profile", protect, (req, res) => {
+  res.json({ message: "Protected route accessed", userId: req.user });
 });
 
-const PORT = 8000;
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+// ── DB ────────────────────────────────────────────────
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log("DB Error:", err));
+
+app.get("/", (req, res) => res.send("rentKaro API running"));
+
+const PORT = process.env.PORT || 8000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
