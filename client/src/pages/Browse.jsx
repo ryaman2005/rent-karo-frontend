@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { Link } from "react-router-dom";
 import { Search, SlidersHorizontal, Package, X, ArrowRight, MapPin, Loader2 } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
@@ -60,7 +60,7 @@ function Browse() {
     if (loc.active && loc.lat && loc.lng) {
       url += `?lat=${loc.lat}&lng=${loc.lng}&radius=5`; // 5KM strict radius
     }
-    axios
+    api
       .get(url)
       .then((res) => { setProducts(res.data); setLoading(false); })
       .catch(() => setLoading(false));

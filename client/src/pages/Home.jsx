@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 import {
   ArrowRight, Package, Zap, Shield, ChevronRight, Sparkles,
   CheckCircle, Search, LayoutGrid, Wrench, Gamepad2, UtensilsCrossed,
@@ -96,8 +96,8 @@ function Home() {
   useScrollReveal(pageRef, [loading]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/products")
+    api
+      .get("/api/products")
       .then((res) => { setProducts(res.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);

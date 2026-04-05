@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn, UserPlus, AlertCircle, CheckCircle2, Loader2, Sparkles, Zap, Lock, Users2, ShoppingBag, Store, Home as HomeIcon } from "lucide-react";
 
@@ -157,12 +157,12 @@ function Login() {
           setLoading(false);
           return;
         }
-        const res = await axios.post("http://localhost:8000/api/auth/register", {
+        const res = await api.post("/api/auth/register", {
           name: form.name, email: form.email, password: form.password, role,
         });
         saveAndRedirect(res.data);
       } else {
-        const res = await axios.post("http://localhost:8000/api/auth/login", {
+        const res = await api.post("/api/auth/login", {
           email: form.email, password: form.password,
         });
         saveAndRedirect(res.data);
@@ -189,7 +189,7 @@ function Login() {
       if (!infoRes.ok) throw new Error("Failed to fetch Google user info");
       const info = await infoRes.json();
 
-      const res = await axios.post("http://localhost:8000/api/auth/google", {
+      const res = await api.post("/api/auth/google", {
         googleId: info.sub,
         name: info.name,
         email: info.email,
