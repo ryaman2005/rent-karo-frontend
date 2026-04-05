@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { Menu, X, Package, LogOut, List, ShoppingBag, Search, Sparkles, Bell, MessageSquare } from "lucide-react";
 import { getSocket, connectSocket, disconnectSocket } from "../services/socketService";
 import NotificationPanel from "./NotificationPanel";
@@ -46,9 +46,7 @@ function Navbar() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await axios.get("http://localhost:8000/api/rentals/owner", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get("/api/rentals/owner");
       // Map backend rentals to notification format
       const reqs = res.data.map(r => ({
         rentalId: r._id,

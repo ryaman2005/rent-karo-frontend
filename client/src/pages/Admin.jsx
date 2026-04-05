@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 function Admin(){
 
@@ -9,17 +9,14 @@ const [deposit,setDeposit] = useState("");
 const [image,setImage] = useState("");
 
 const handleAddProduct = async ()=>{
+  await api.post("/api/products",{
+    name,
+    price,
+    deposit,
+    image
+  });
 
-await axios.post("http://localhost:8000/api/products",{
-
-name,
-price,
-deposit,
-image
-
-});
-
-alert("Product added");
+  alert("Product added");
 
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { Trash2, Package, Plus, AlertCircle, Loader2 } from "lucide-react";
 
@@ -14,8 +14,8 @@ function MyListings() {
 
   useEffect(() => {
     if (!user) return;
-    axios
-      .get(`http://localhost:8000/api/products/my-listings/${user._id}`)
+    api
+      .get(`/api/products/my-listings/${user._id}`)
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
@@ -26,7 +26,7 @@ function MyListings() {
   const deleteProduct = async (id) => {
     setDeletingId(id);
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      await api.delete(`/api/products/${id}`);
       setProducts((prev) => prev.filter((p) => p._id !== id));
       setConfirmId(null);
     } catch (err) {
