@@ -1,9 +1,8 @@
 import { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, LogIn, UserPlus, AlertCircle, CheckCircle2, Loader2, Sparkles, Zap, Lock, Users2, ShoppingBag, Store, Home as HomeIcon } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, AlertCircle, CheckCircle2, Loader2, Zap, Lock, Users2 } from "lucide-react";
 
-/* ── Google Sign-In Button (uses Google Identity Services) ── */
 function GoogleButton({ onSuccess, onError, label = "Continue with Google" }) {
   const handleClick = () => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -13,7 +12,7 @@ function GoogleButton({ onSuccess, onError, label = "Continue with Google" }) {
     }
     const gis = window.google?.accounts?.oauth2;
     if (!gis) {
-      onError("Google sign-in library failed to load. Please refresh the page.");
+      onError("Google sign-in library failed to load. Refresh and try again.");
       return;
     }
     const client = gis.initTokenClient({
@@ -29,101 +28,48 @@ function GoogleButton({ onSuccess, onError, label = "Continue with Google" }) {
     <button
       type="button"
       onClick={handleClick}
-      className="btn btn-outline btn-primary w-full flex items-center justify-center gap-3 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 hover:-translate-y-0.5"
-      style={{
-        color: "#e2e8f0",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
-        e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.4)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
-        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
-      }}
+      className="btn btn-outline w-full rounded-3xl border-slate-700 text-slate-100 hover:border-slate-500"
     >
-      {/* Google Icon */}
-      <svg width="18" height="18" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        <path fill="none" d="M0 0h48v48H0z"/>
-      </svg>
-      {label}
-    </button>
-  );
-}
-
-/* ── Role Card ── */
-function RoleCard({ role, icon, title, desc, active, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="relative flex-1 rounded-2xl p-5 text-left transition-all duration-300 active:scale-95"
-      style={{
-        background: active
-          ? "linear-gradient(135deg, rgba(79,70,229,0.18), rgba(124,58,237,0.12))"
-          : "rgba(10,15,30,0.6)",
-        border: active
-          ? "1.5px solid rgba(99,102,241,0.55)"
-          : "1.5px solid rgba(30,41,59,0.9)",
-        boxShadow: active
-          ? "0 0 20px rgba(99,102,241,0.15), inset 0 0 20px rgba(99,102,241,0.04)"
-          : "none",
-      }}
-    >
-      {active && (
-        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center">
-          <CheckCircle2 size={12} className="text-white" />
-        </span>
-      )}
-      <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-        style={{
-          background: active ? "rgba(99,102,241,0.15)" : "rgba(15,23,42,0.8)",
-          border: active ? "1px solid rgba(99,102,241,0.3)" : "1px solid rgba(30,41,59,0.8)",
-        }}
-      >
-        {icon}
+      <div className="inline-flex items-center justify-center gap-3">
+        <svg width="18" height="18" viewBox="0 0 48 48" className="inline-block">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          <path fill="none" d="M0 0h48v48H0z" />
+        </svg>
+        <span>{label}</span>
       </div>
-      <p className={`font-bold text-sm mb-1 ${active ? "text-indigo-300" : "text-slate-300"}`}>{title}</p>
-      <p className="text-slate-500 text-xs leading-relaxed">{desc}</p>
-
     </button>
   );
 }
 
-/* ── Toast ── */
 function Toast({ message, type }) {
   if (!message) return null;
   const isError = type === "error";
   return (
-    <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm toast-enter ${
+    <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm ${
       isError
-        ? "bg-red-500/10 border border-red-500/25 text-red-400"
-        : "bg-emerald-500/10 border border-emerald-500/25 text-emerald-400"
+        ? "bg-red-500/10 border border-red-500/25 text-red-300"
+        : "bg-emerald-500/10 border border-emerald-500/25 text-emerald-200"
     }`}>
-      {isError ? <AlertCircle size={15} /> : <CheckCircle2 size={15} />}
+      {isError ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
       {message}
     </div>
   );
 }
 
-/* ─────────────── Main Component ─────────────── */
 function Login() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login"); // "login" | "signup"
+  const [mode, setMode] = useState("login");
   const [role, setRole] = useState("renter");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: "", type: "error" });
-
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
 
-  const showToast = (msg, type = "error") => {
-    setToast({ message: msg, type });
+  const showToast = (message, type = "error") => {
+    setToast({ message, type });
     setTimeout(() => setToast({ message: "", type: "error" }), 4000);
   };
 
@@ -136,7 +82,6 @@ function Login() {
     setTimeout(() => navigate("/"), 1100);
   };
 
-  /* ── Email/Password submit ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -155,23 +100,26 @@ function Login() {
           return;
         }
         const res = await api.post("/api/auth/register", {
-          name: form.name, email: form.email, password: form.password, role,
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role,
         });
         saveAndRedirect(res.data);
       } else {
         const res = await api.post("/api/auth/login", {
-          email: form.email, password: form.password,
+          email: form.email,
+          password: form.password,
         });
         saveAndRedirect(res.data);
       }
     } catch (err) {
-      showToast(err?.response?.data?.message || "Something went wrong. Please try again.");
+      showToast(err?.response?.data?.message || "Unable to sign in. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ── Google OAuth callback ── */
   const handleGoogleSuccess = async (response) => {
     if (!response?.access_token) {
       showToast("Google sign-in was cancelled.");
@@ -179,7 +127,6 @@ function Login() {
     }
     setLoading(true);
     try {
-      // Fetch user info with the access token
       const infoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
         headers: { Authorization: `Bearer ${response.access_token}` },
       });
@@ -196,169 +143,140 @@ function Login() {
       saveAndRedirect(res.data);
     } catch (err) {
       showToast("Google sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const switchMode = (m) => {
-    setMode(m);
+  const switchMode = (nextMode) => {
+    setMode(nextMode);
     setToast({ message: "", type: "error" });
     setForm({ name: "", email: "", password: "", confirmPassword: "" });
   };
 
   return (
-    <div className="min-h-screen flex text-white" style={{ background: "#020917" }}>
-
-      {/* ── Left Branding Panel ── */}
-      <div
-        className="hidden lg:flex flex-col justify-between w-5/12 p-14 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(145deg, #0a0f1e, #080d1a)",
-          borderRight: "1px solid rgba(99,102,241,0.1)",
-        }}
-      >
-        {/* Orbs */}
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-indigo-600/8 blur-[80px] animate-orb1 pointer-events-none" />
-        <div className="absolute top-10 right-0 w-60 h-60 rounded-full bg-purple-600/8 blur-[60px] animate-orb2 pointer-events-none" />
-
-        {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <Sparkles size={16} className="text-white" />
-          </div>
-          <span className="text-2xl font-extrabold gradient-text">rentKaro</span>
-        </div>
-
-        {/* Tagline */}
-        <div className="animate-float">
-          <h2 className="text-5xl font-black mb-5 leading-tight">
-            The smarter<br />way to{" "}
-            <span className="text-shimmer">rent.</span>
-          </h2>
-          <p className="text-slate-400 leading-relaxed max-w-xs">
-            Join thousands of renters and owners who live smarter with rentKaro.
-          </p>
-
-          {/* Feature list */}
-          <div className="mt-8 space-y-4">
-            {[ 
-            { icon: <Zap size={16} className="text-indigo-400" />, text: "Instant booking, no paperwork" },
-            { icon: <Lock size={16} className="text-indigo-400" />, text: "100% refundable deposits" },
-            { icon: <Users2 size={16} className="text-indigo-400" />, text: "Verified renters and owners" },
-          ].map((f) => (
-            <div key={f.text} className="flex items-center gap-3">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}
-              >
-                {f.icon}
-              </div>
-              <span className="text-slate-400 text-sm">{f.text}</span>
-            </div>
-          ))}
-          </div>
-        </div>
-
-        <p className="text-slate-700 text-xs">© 2026 rentKaro. All rights reserved.</p>
-      </div>
-
-      {/* ── Right Auth Panel ── */}
-      <div className="flex flex-col justify-center items-center flex-1 px-6 py-12">
-<div className="w-full max-w-md animate-fade-in card glass p-8 border border-slate-800">
-
-          {/* Mobile logo */}
-          <div className="lg:hidden mb-8 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-              <Sparkles size={14} className="text-white" />
-            </div>
-            <span className="text-2xl font-extrabold gradient-text">rentKaro</span>
-          </div>
-
-          {/* Mode Toggle */}
-          <div
-            className="flex rounded-2xl p-1 mb-8"
-            style={{ background: "rgba(10,15,30,0.8)", border: "1px solid rgba(30,41,59,0.8)" }}
-          >
-            {["login", "signup"].map((m) => (
-              <button
-                key={m}
-                onClick={() => switchMode(m)}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300"
-                style={
-                  mode === m
-                    ? {
-                        background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-                        boxShadow: "0 4px 14px rgba(99,102,241,0.4)",
-                        color: "#fff",
-                      }
-                    : { color: "#64748b" }
-                }
-              >
-                {m === "login" ? <LogIn size={15} /> : <UserPlus size={15} />}
-                {m === "login" ? "Sign In" : "Sign Up"}
-              </button>
-            ))}
-          </div>
-
-          {/* Heading */}
-          <div className="mb-7">
-            <h1 className="text-3xl font-black mb-1">
-              {mode === "login" ? "Welcome back" : "Create account"}
+    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden py-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.14),_transparent_18%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.12),_transparent_16%)] pointer-events-none" />
+      <div className="relative z-10 max-w-6xl mx-auto px-6 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
+        <section className="hidden lg:flex flex-col justify-between rounded-[2rem] border border-slate-800/80 bg-slate-900/90 p-12 shadow-2xl shadow-black/20">
+          <div className="space-y-5">
+            <p className="text-sm uppercase tracking-[0.35em] text-indigo-300">rentKaro</p>
+            <h1 className="text-5xl font-black tracking-tight text-white max-w-xl">
+              A better way to rent and earn from the things you own.
             </h1>
-            <p className="text-slate-400 text-sm">
-              {mode === "login"
-                ? "Sign in to access your rentals and listings."
-                : "Join rentKaro — choose how you want to participate."}
+            <p className="max-w-xl text-slate-400 leading-relaxed text-lg">
+              Build trust with a clean rental dashboard, transparent listings, and simple communication with owners and renters.
             </p>
           </div>
 
-          {/* ── Role Picker (signup only) ── */}
-          {mode === "signup" && (
-            <div className="mb-6">
-              <p className="text-sm text-slate-400 mb-3 font-medium">I want to...</p>
-              <div className="flex gap-3">
-                <RoleCard
-                  role="renter"
-                  icon={<ShoppingBag size={26} className="text-indigo-400" />}
-                  title="Rent items"
-                  desc="Browse and rent items from owners near you."
-                  active={role === "renter"}
-                  onClick={() => setRole("renter")}
-                />
-                <RoleCard
-                  role="owner"
-                  icon={<Store size={26} className="text-violet-400" />}
-                  title="List items"
-                  desc="Earn money by listing your unused items for rent."
-                  active={role === "owner"}
-                  onClick={() => setRole("owner")}
-                />
+          <div className="grid gap-4">
+            <div className="rounded-3xl border border-slate-800/80 bg-slate-950/80 p-5">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-300 mb-3">
+                <Zap size={18} />
               </div>
+              <p className="font-semibold text-white mb-1">Quick rentals</p>
+              <p className="text-slate-400 text-sm leading-relaxed">Search items, reserve instantly, and manage every booking from one place.</p>
+            </div>
+            <div className="rounded-3xl border border-slate-800/80 bg-slate-950/80 p-5">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-300 mb-3">
+                <Lock size={18} />
+              </div>
+              <p className="font-semibold text-white mb-1">Safe deposits</p>
+              <p className="text-slate-400 text-sm leading-relaxed">Payments and deposits are protected so you can rent without uncertainty.</p>
+            </div>
+            <div className="rounded-3xl border border-slate-800/80 bg-slate-950/80 p-5">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-300 mb-3">
+                <Users2 size={18} />
+              </div>
+              <p className="font-semibold text-white mb-1">Clear communication</p>
+              <p className="text-slate-400 text-sm leading-relaxed">Chat with owners and renters, confirm details, and stay organized.</p>
+            </div>
+          </div>
+
+          <p className="text-slate-500 text-sm">The friendliest rental marketplace for communities and creatives.</p>
+        </section>
+
+        <section className="rounded-[2rem] border border-slate-800/80 bg-slate-900/95 p-8 shadow-2xl shadow-black/20">
+          <div className="grid gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-3 rounded-3xl border border-slate-800/80 bg-slate-950/75 p-1">
+              {[
+                { key: "login", label: "Sign In", icon: <LogIn size={16} /> },
+                { key: "signup", label: "Sign Up", icon: <UserPlus size={16} /> },
+              ].map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => switchMode(item.key)}
+                  className={`rounded-3xl py-3 text-sm font-semibold transition ${
+                    mode === item.key
+                      ? "bg-white text-slate-950 shadow-sm"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    {item.icon}
+                    {item.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-3xl font-black text-white">
+                {mode === "login" ? "Welcome back" : "Create your account"}
+              </h2>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                {mode === "login"
+                  ? "Sign in to manage your rentals, listings, and messages."
+                  : "Make your account and choose whether you want to rent or list items."}
+              </p>
+            </div>
+          </div>
+
+          {mode === "signup" && (
+            <div className="grid gap-3 mb-6 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setRole("renter")}
+                className={`rounded-3xl border px-4 py-4 text-left text-sm transition ${
+                  role === "renter"
+                    ? "border-indigo-500 bg-indigo-500/10 text-white"
+                    : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                }`}
+              >
+                <p className="font-semibold">Rent items</p>
+                <p className="text-slate-500 text-xs mt-1">Find and book verified rentals in minutes.</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("owner")}
+                className={`rounded-3xl border px-4 py-4 text-left text-sm transition ${
+                  role === "owner"
+                    ? "border-emerald-500 bg-emerald-500/10 text-white"
+                    : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                }`}
+              >
+                <p className="font-semibold">List items</p>
+                <p className="text-slate-500 text-xs mt-1">Show your gear and earn with flexible rental plans.</p>
+              </button>
             </div>
           )}
 
-          {/* ── Google Sign In ── */}
-          <GoogleButton
-            onSuccess={handleGoogleSuccess}
-            onError={(msg) => showToast(msg)}
-            label={mode === "login" ? "Sign in with Google" : "Sign up with Google"}
-          />
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-5">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-slate-600 text-xs font-medium">or continue with email</span>
-            <div className="flex-1 h-px bg-slate-800" />
+          <div className="space-y-4 mb-4">
+            <GoogleButton onSuccess={handleGoogleSuccess} onError={(msg) => showToast(msg)} label={mode === "login" ? "Continue with Google" : "Sign up with Google"} />
+            <div className="divider text-slate-600">Or continue with email</div>
           </div>
 
-          {/* ── Form ── */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <div>
-                <label className="text-xs text-slate-400 mb-1.5 block font-medium">Full Name</label>
+                <label className="label">
+                  <span className="label-text text-slate-300 text-sm">Full name</span>
+                </label>
                 <input
                   name="name"
                   type="text"
-                  placeholder="Aryaman Bohra"
+                  placeholder="Your full name"
                   value={form.name}
                   onChange={handleChange}
                   className="input input-bordered input-lg w-full bg-slate-950 text-white border-slate-700"
@@ -368,7 +286,9 @@ function Login() {
             )}
 
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block font-medium">Email</label>
+              <label className="label">
+                <span className="label-text text-slate-300 text-sm">Email address</span>
+              </label>
               <input
                 name="email"
                 type="email"
@@ -381,30 +301,34 @@ function Login() {
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block font-medium">Password</label>
+              <label className="label">
+                <span className="label-text text-slate-300 text-sm">Password</span>
+              </label>
               <div className="relative">
                 <input
                   name="password"
                   type={showPw ? "text" : "password"}
-                  placeholder={mode === "signup" ? "Min. 6 characters" : "••••••••"}
+                  placeholder="Enter your password"
                   value={form.password}
                   onChange={handleChange}
-                  className="input input-bordered input-lg w-full pr-11 bg-slate-950 text-white border-slate-700"
+                  className="input input-bordered input-lg w-full pr-12 bg-slate-950 text-white border-slate-700"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition"
                 >
-                  {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+                  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
             {mode === "signup" && (
               <div>
-                <label className="text-xs text-slate-400 mb-1.5 block font-medium">Confirm Password</label>
+                <label className="label">
+                  <span className="label-text text-slate-300 text-sm">Confirm password</span>
+                </label>
                 <input
                   name="confirmPassword"
                   type={showPw ? "text" : "password"}
@@ -422,35 +346,36 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-full flex items-center justify-center gap-2 py-4 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+              className="btn btn-primary w-full rounded-3xl py-4 text-base font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <><Loader2 size={16} className="animate-spin" /> {mode === "login" ? "Signing in..." : "Creating account..."}</>
+                <><Loader2 size={18} className="animate-spin" /> {mode === "login" ? "Signing in..." : "Creating account..."}</>
               ) : mode === "login" ? (
-                <><LogIn size={16} /> Sign In</>
+                <>Sign in</>
               ) : (
-                <><UserPlus size={16} /> Create Account</>
+                <>Create account</>
               )}
             </button>
           </form>
 
-          {/* Footer link */}
           <p className="text-center text-slate-500 text-sm mt-6">
             {mode === "login" ? (
-              <>Don't have an account?{" "}
+              <>
+                Don't have an account?{" "}
                 <button onClick={() => switchMode("signup")} className="text-indigo-400 hover:text-indigo-300 font-semibold transition">
-                  Sign Up
+                  Sign up
                 </button>
               </>
             ) : (
-              <>Already have an account?{" "}
+              <>
+                Already have an account?{" "}
                 <button onClick={() => switchMode("login")} className="text-indigo-400 hover:text-indigo-300 font-semibold transition">
-                  Sign In
+                  Sign in
                 </button>
               </>
             )}
           </p>
-        </div>
+        </section>
       </div>
     </div>
   );
