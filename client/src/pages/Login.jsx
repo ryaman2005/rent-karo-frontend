@@ -29,12 +29,9 @@ function GoogleButton({ onSuccess, onError, label = "Continue with Google" }) {
     <button
       type="button"
       onClick={handleClick}
-      className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 hover:-translate-y-0.5"
+      className="btn btn-outline btn-primary w-full flex items-center justify-center gap-3 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 hover:-translate-y-0.5"
       style={{
-        background: "rgba(15,23,50,0.7)",
-        border: "1px solid rgba(255,255,255,0.12)",
         color: "#e2e8f0",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
@@ -266,7 +263,7 @@ function Login() {
 
       {/* ── Right Auth Panel ── */}
       <div className="flex flex-col justify-center items-center flex-1 px-6 py-12">
-        <div className="w-full max-w-md animate-fade-in">
+<div className="w-full max-w-md animate-fade-in card glass p-8 border border-slate-800">
 
           {/* Mobile logo */}
           <div className="lg:hidden mb-8 flex items-center gap-2">
@@ -364,7 +361,7 @@ function Login() {
                   placeholder="Aryaman Bohra"
                   value={form.name}
                   onChange={handleChange}
-                  className="input-field"
+                  className="input input-bordered input-lg w-full bg-slate-950 text-white border-slate-700"
                   required
                 />
               </div>
@@ -378,7 +375,7 @@ function Login() {
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={handleChange}
-                className="input-field"
+                className="input input-bordered input-lg w-full bg-slate-950 text-white border-slate-700"
                 required
               />
             </div>
@@ -392,7 +389,7 @@ function Login() {
                   placeholder={mode === "signup" ? "Min. 6 characters" : "••••••••"}
                   value={form.password}
                   onChange={handleChange}
-                  className="input-field pr-11"
+                  className="input input-bordered input-lg w-full pr-11 bg-slate-950 text-white border-slate-700"
                   required
                 />
                 <button
@@ -414,7 +411,7 @@ function Login() {
                   placeholder="Re-enter password"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  className="input-field"
+                  className="input input-bordered input-lg w-full bg-slate-950 text-white border-slate-700"
                   required
                 />
               </div>
@@ -425,7 +422,7 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+              className="btn btn-primary w-full flex items-center justify-center gap-2 py-4 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed mt-1"
             >
               {loading ? (
                 <><Loader2 size={16} className="animate-spin" /> {mode === "login" ? "Signing in..." : "Creating account..."}</>
