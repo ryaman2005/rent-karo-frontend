@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 import {
   Bell, X, CheckCircle, XCircle, Clock, Package,
   User, Calendar, IndianRupee, ChevronRight
@@ -29,7 +30,7 @@ function RequestCard({ req, onAction }) {
     setLoading(status);
     try {
       await axios.patch(
-        `http://localhost:8000/api/rentals/${req.rentalId}`,
+        `${API_URL}/api/rentals/${req.rentalId}`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

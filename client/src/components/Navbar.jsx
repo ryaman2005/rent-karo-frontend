@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 import { Menu, X, Package, LogOut, List, ShoppingBag, Search, Sparkles, Bell, MessageSquare } from "lucide-react";
 import { getSocket, connectSocket, disconnectSocket } from "../services/socketService";
 import NotificationPanel from "./NotificationPanel";
@@ -46,7 +47,7 @@ function Navbar() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await axios.get("http://localhost:8000/api/rentals/owner", {
+      const res = await axios.get(`${API_URL}/api/rentals/owner`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Map backend rentals to notification format
@@ -117,8 +118,8 @@ function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? "glass shadow-xl shadow-black/30" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+        scrolled ? "glass-cinematic" : "bg-transparent"
       }`}
     >
       {/* Top accent line */}
@@ -135,7 +136,7 @@ function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-shadow">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 logo-cinematic transition-all duration-300">
             <Sparkles size={14} className="text-white" />
           </div>
           <span className="text-2xl font-extrabold tracking-tight gradient-text">rentKaro</span>

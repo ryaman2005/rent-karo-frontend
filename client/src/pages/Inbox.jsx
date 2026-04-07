@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 import { MessageSquare, Loader2, ArrowUpRight } from "lucide-react";
+import CinematicText from "../components/CinematicText";
 import ChatModal from "../components/ChatModal";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +18,7 @@ function Inbox() {
     const fetchInbox = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/rentals/inbox", {
+        const res = await axios.get(`${API_URL}/api/rentals/inbox`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setConversations(res.data);
@@ -32,12 +34,15 @@ function Inbox() {
   return (
     <div className="min-h-screen bg-slate-950 text-white pt-28 pb-16 px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8 animate-fade-in">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-extrabold mb-1">
-              Your <span className="gradient-text">Inbox</span>
+            <h1 className="text-4xl font-extrabold mb-1 cinematic-fade-up">
+              <CinematicText text="Your " stagger={30} delay={100} />
+              <span className="gradient-text">
+                <CinematicText text="Inbox" stagger={30} delay={200} />
+              </span>
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-sm animate-fade-in delay-200">
               Coordinate pickups and drop-offs with your renters and owners.
             </p>
           </div>
@@ -69,7 +74,7 @@ function Inbox() {
                 <div
                   key={rental._id}
                   onClick={() => setChatRental(rental)}
-                  className="bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group animate-fade-in"
+                  className="bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-500 group cinematic-fade-up"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-700">

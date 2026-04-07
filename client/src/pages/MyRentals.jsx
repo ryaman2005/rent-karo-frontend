@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import { ShoppingBag, ArrowUpRight, CheckCircle2, AlertCircle, Loader2, Clock, XCircle, PackageCheck, MessageCircle } from "lucide-react";
+import CinematicText from "../components/CinematicText";
 import { getSocket } from "../services/socketService";
 import ChatModal from "../components/ChatModal";
 
@@ -17,7 +19,7 @@ function MyRentals() {
     const fetchRentals = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/rentals", {
+        const res = await axios.get(`${API_URL}/api/rentals`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setRentals(res.data);
@@ -46,7 +48,7 @@ function MyRentals() {
     setReturningId(id);
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8000/api/rentals/${id}`, {
+      await axios.delete(`${API_URL}/api/rentals/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRentals((prev) => prev.filter((item) => item._id !== id));
@@ -63,12 +65,15 @@ function MyRentals() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-10 animate-fade-in">
+        <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-extrabold mb-1">
-              My <span className="gradient-text">Rentals</span>
+            <h1 className="text-4xl font-extrabold mb-1 cinematic-fade-up">
+              <CinematicText text="My " stagger={30} delay={100} />
+              <span className="gradient-text">
+                <CinematicText text="Rentals" stagger={30} delay={200} />
+              </span>
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-sm animate-fade-in delay-200">
               {rentals.length} active rental{rentals.length !== 1 ? "s" : ""}
             </p>
           </div>
@@ -103,7 +108,7 @@ function MyRentals() {
             {rentals.map((item) => (
               <div
                 key={item._id}
-                className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between hover:border-slate-700 transition-all duration-300 animate-fade-in"
+                className="bg-slate-900/80 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between hover:border-indigo-500/20 transition-all duration-500 cinematic-fade-up"
               >
                 {/* Card Top */}
                 <div>

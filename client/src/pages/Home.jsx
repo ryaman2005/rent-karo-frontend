@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../config";
 import {
   ArrowRight, Package, Zap, Shield, ChevronRight, Sparkles,
   CheckCircle, Search, LayoutGrid, Wrench, Gamepad2, UtensilsCrossed,
   Users, MapPin, BadgeCheck, TrendingUp, Clock, RotateCcw, Star
 } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { useParallax } from "../hooks/useParallax";
+import { useMagneticCursor } from "../hooks/useMagneticCursor";
+import CinematicText from "../components/CinematicText";
+import ParticleField from "../components/ParticleField";
+import Card3D from "../components/Card3D";
 
 /* ── Skeleton Card ── */
 function SkeletonCard() {
@@ -92,12 +98,17 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const navigate = useNavigate();
   const pageRef = useRef(null);
+  const ctaRef = useRef(null);
+
+  // Cinematic hooks
+  const parallax = useParallax(0.015);
+  useMagneticCursor(ctaRef, 0.25);
 
   useScrollReveal(pageRef, [loading]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/products")
+      .get(`${API_URL}/api/products`)
       .then((res) => { setProducts(res.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
@@ -113,13 +124,25 @@ function Home() {
     <div ref={pageRef} className="min-h-screen text-white overflow-x-hidden" style={{ background: "#020917" }}>
 
       {/* ── HERO ── */}
-      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-40 pb-32 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-40 pb-32 overflow-hidden parallax-hero">
 
-        {/* Background mesh */}
+        {/* Particle field */}
+        <ParticleField count={80} color="99,102,241" speed={0.2} />
+
+        {/* Background mesh — parallax layers */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="animate-orb1 absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-600/6 blur-[120px]" />
-          <div className="animate-orb2 absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-violet-600/8 blur-[100px]" />
-          <div className="animate-orb3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-sky-600/4 blur-[80px]" />
+          <div
+            className="parallax-layer animate-orb1 absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-600/6 blur-[120px]"
+            style={{ transform: `translate(${parallax.x * 2}px, ${parallax.y * 2}px)` }}
+          />
+          <div
+            className="parallax-layer animate-orb2 absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-violet-600/8 blur-[100px]"
+            style={{ transform: `translate(${parallax.x * -1.5}px, ${parallax.y * -1.5}px)` }}
+          />
+          <div
+            className="parallax-layer animate-orb3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-sky-600/4 blur-[80px]"
+            style={{ transform: `translate(${parallax.x * 1}px, ${parallax.y * 1}px)` }}
+          />
           <div
             className="absolute inset-0 opacity-[0.025]"
             style={{
@@ -129,6 +152,20 @@ function Home() {
           />
         </div>
 
+        {/* Ambient dots */}
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="ambient-dot"
+            style={{
+              left: `${15 + i * 14}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              animationDelay: `${i * 0.6}s`,
+              animationDuration: `${3 + i * 0.5}s`,
+            }}
+          />
+        ))}
+
         {/* Badge */}
         <div className="animate-fade-in delay-100 inline-flex items-center gap-2 text-indigo-300 text-sm px-5 py-2.5 rounded-full mb-10 cursor-default"
           style={{ background: "rgba(79,70,229,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}>
@@ -137,11 +174,13 @@ function Home() {
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </div>
 
-        {/* Headline */}
-        <h1 className="animate-fade-in delay-200 text-6xl md:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl">
-          Rent Smarter.
+        {/* Cinematic Headline */}
+        <h1 className="text-6xl md:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl cinematic-fade-up">
+          <CinematicText text="Rent Smarter." stagger={40} delay={200} />
           <br />
-          <span className="text-shimmer">Live Better.</span>
+          <span className="text-shimmer">
+            <CinematicText text="Live Better." stagger={40} delay={600} />
+          </span>
         </h1>
 
         <p className="animate-fade-in delay-300 mt-7 text-slate-400 max-w-2xl text-xl leading-relaxed font-light">
@@ -150,12 +189,14 @@ function Home() {
           No ownership burden. No long-term lock-in.
         </p>
 
-        {/* CTAs */}
+        {/* CTAs with magnetic effect */}
         <div className="animate-fade-in delay-400 flex flex-wrap gap-4 mt-12 justify-center">
-          <button onClick={() => navigate("/browse")} className="btn-primary flex items-center gap-2 text-base px-9 py-4 text-white">
-            <span>Browse Listings</span>
-            <ArrowRight size={18} />
-          </button>
+          <div ref={ctaRef} className="magnetic-btn">
+            <button onClick={() => navigate("/browse")} className="btn-primary flex items-center gap-2 text-base px-9 py-4 text-white">
+              <span>Browse Listings</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
           <button onClick={() => navigate("/list-item")} className="btn-secondary flex items-center gap-2 text-base px-9 py-4">
             List Your Items
           </button>
@@ -176,6 +217,9 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {/* ── CINEMATIC DIVIDER ── */}
+      <div className="cinematic-divider" />
 
       {/* ── MARQUEE TICKER ── */}
       <div className="relative py-4 border-y border-slate-800/40 overflow-hidden" style={{ background: "rgba(10,15,30,0.5)" }}>
@@ -210,24 +254,25 @@ function Home() {
               style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent)" }} />
 
             {HOW_IT_WORKS.map((item, i) => (
-              <div
-                key={item.step}
-                data-reveal data-delay={`${i * 120}`}
-                className={`reveal-scale reveal rounded-2xl p-8 border transition-all duration-500 group cursor-default relative overflow-hidden ${item.border}`}
-                style={{ background: item.bg + ", #0a0f1a" }}
-              >
-                <span className="absolute top-5 right-6 text-5xl font-black text-slate-800/50 select-none group-hover:text-slate-700/50 transition-colors font-mono">
-                  {item.step}
-                </span>
+              <Card3D key={item.step} intensity={6}>
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-                  style={{ background: item.bg, border: `1px solid ${item.glow.replace("0.25", "0.3")}`, boxShadow: `0 0 16px ${item.glow}` }}
+                  data-reveal data-delay={`${i * 120}`}
+                  className={`reveal-scale reveal rounded-2xl p-8 border transition-all duration-500 group cursor-default relative overflow-hidden ${item.border}`}
+                  style={{ background: item.bg + ", #0a0f1a" }}
                 >
-                  {item.icon}
+                  <span className="absolute top-5 right-6 text-5xl font-black text-slate-800/50 select-none group-hover:text-slate-700/50 transition-colors font-mono">
+                    {item.step}
+                  </span>
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+                    style={{ background: item.bg, border: `1px solid ${item.glow.replace("0.25", "0.3")}`, boxShadow: `0 0 16px ${item.glow}` }}
+                  >
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-bold mb-3">{item.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold mb-3">{item.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
-              </div>
+              </Card3D>
             ))}
           </div>
         </div>
@@ -251,6 +296,9 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── CINEMATIC DIVIDER ── */}
+      <div className="cinematic-divider" />
 
       {/* ── FEATURED RENTALS ── */}
       <section className="py-24 px-6 relative overflow-hidden">
@@ -310,47 +358,48 @@ function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product, i) => (
-                <div
-                  key={product._id}
-                  data-reveal data-delay={`${i * 80}`}
-                  className="reveal border-gradient rounded-2xl overflow-hidden card-hover group cursor-pointer"
-                  style={{ background: "linear-gradient(160deg, #0d1526, #080e1a)", border: "1px solid rgba(20,30,50,1)" }}
-                  onClick={() => navigate(`/product/${product._id}`)}
-                >
-                  <div className="relative overflow-hidden h-56">
-                    <img
-                      src={product.image} alt={product.name}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#080e1a] via-transparent to-transparent" />
-                    <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/5 transition-colors duration-500" />
-                    {product.category && (
-                      <span className="absolute top-4 left-4 text-xs font-semibold backdrop-blur-md text-white px-3 py-1.5 rounded-lg"
-                        style={{ background: "rgba(79,70,229,0.85)", border: "1px solid rgba(99,102,241,0.4)" }}>
-                        {product.category}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold mb-1 group-hover:text-indigo-300 transition-colors duration-300 line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-end gap-1 mb-1">
-                      <span className="text-indigo-400 font-black text-2xl">₹{product.price}</span>
-                      <span className="text-slate-500 text-sm mb-0.5">/month</span>
+                <Card3D key={product._id} intensity={6}>
+                  <div
+                    data-reveal data-delay={`${i * 80}`}
+                    className="reveal border-gradient rounded-2xl overflow-hidden group cursor-pointer"
+                    style={{ background: "linear-gradient(160deg, #0d1526, #080e1a)", border: "1px solid rgba(20,30,50,1)" }}
+                    onClick={() => navigate(`/product/${product._id}`)}
+                  >
+                    <div className="relative overflow-hidden h-56">
+                      <img
+                        src={product.image} alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#080e1a] via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/5 transition-colors duration-500" />
+                      {product.category && (
+                        <span className="absolute top-4 left-4 text-xs font-semibold backdrop-blur-md text-white px-3 py-1.5 rounded-lg"
+                          style={{ background: "rgba(79,70,229,0.85)", border: "1px solid rgba(99,102,241,0.4)" }}>
+                          {product.category}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-slate-500 text-sm">
-                      <span className="text-slate-400">₹{product.deposit}</span> refundable deposit
-                    </p>
-                    <button
-                      className="mt-5 w-full btn-primary flex items-center justify-center gap-2 text-white text-sm"
-                      onClick={(e) => { e.stopPropagation(); navigate(`/product/${product._id}`); }}
-                    >
-                      <span>View Details</span>
-                      <ChevronRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
-                    </button>
+                    <div className="p-6">
+                      <h3 className="text-lg font-bold mb-1 group-hover:text-indigo-300 transition-colors duration-300 line-clamp-1">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-end gap-1 mb-1">
+                        <span className="text-indigo-400 font-black text-2xl">₹{product.price}</span>
+                        <span className="text-slate-500 text-sm mb-0.5">/month</span>
+                      </div>
+                      <p className="text-slate-500 text-sm">
+                        <span className="text-slate-400">₹{product.deposit}</span> refundable deposit
+                      </p>
+                      <button
+                        className="mt-5 w-full btn-primary flex items-center justify-center gap-2 text-white text-sm"
+                        onClick={(e) => { e.stopPropagation(); navigate(`/product/${product._id}`); }}
+                      >
+                        <span>View Details</span>
+                        <ChevronRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </Card3D>
               ))}
             </div>
           )}
@@ -368,10 +417,11 @@ function Home() {
 
       {/* ── BOTTOM CTA ── */}
       <section className="py-28 px-6 relative overflow-hidden">
+        <ParticleField count={30} color="99,102,241" speed={0.15} />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-indigo-600/5 blur-[80px] rounded-full animate-glow-pulse" />
         </div>
-        <div data-reveal className="reveal max-w-3xl mx-auto text-center animated-border p-px rounded-3xl">
+        <div data-reveal className="reveal max-w-3xl mx-auto text-center animated-border p-px rounded-3xl relative z-10">
           <div className="rounded-3xl px-10 py-16" style={{ background: "#060b18" }}>
             <div className="w-12 h-12 rounded-2xl mx-auto mb-6 flex items-center justify-center"
               style={{ background: "rgba(79,70,229,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}>

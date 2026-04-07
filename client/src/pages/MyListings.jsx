@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import { Trash2, Package, Plus, AlertCircle, Loader2 } from "lucide-react";
+import CinematicText from "../components/CinematicText";
+import Card3D from "../components/Card3D";
 
 function MyListings() {
   const [products, setProducts] = useState([]);
@@ -15,7 +18,7 @@ function MyListings() {
   useEffect(() => {
     if (!user) return;
     axios
-      .get(`http://localhost:8000/api/products/my-listings/${user._id}`)
+      .get(`${API_URL}/api/products/my-listings/${user._id}`)
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
@@ -26,7 +29,7 @@ function MyListings() {
   const deleteProduct = async (id) => {
     setDeletingId(id);
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      await axios.delete(`${API_URL}/api/products/${id}`);
       setProducts((prev) => prev.filter((p) => p._id !== id));
       setConfirmId(null);
     } catch (err) {
@@ -41,12 +44,15 @@ function MyListings() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-10 animate-fade-in">
+        <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-extrabold mb-1">
-              My <span className="gradient-text">Listings</span>
+            <h1 className="text-4xl font-extrabold mb-1 cinematic-fade-up">
+              <CinematicText text="My " stagger={30} delay={100} />
+              <span className="gradient-text">
+                <CinematicText text="Listings" stagger={30} delay={200} />
+              </span>
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-sm animate-fade-in delay-200">
               {products.length} item{products.length !== 1 ? "s" : ""} listed
             </p>
           </div>
@@ -88,9 +94,9 @@ function MyListings() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
+              <Card3D key={product._id} intensity={5}>
               <div
-                key={product._id}
-                className="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all duration-300 group animate-fade-in"
+                className="bg-slate-900/80 rounded-2xl overflow-hidden border border-slate-800 hover:border-indigo-500/20 transition-all duration-500 group cinematic-fade-up"
               >
                 <div className="relative overflow-hidden h-52">
                   <img
@@ -152,7 +158,8 @@ function MyListings() {
                     </button>
                   )}
                 </div>
-              </div>
+                </div>
+              </Card3D>
             ))}
           </div>
         )}

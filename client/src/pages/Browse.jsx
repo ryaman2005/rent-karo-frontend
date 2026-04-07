@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { API_URL } from "../config";
 import { Search, SlidersHorizontal, Package, X, ArrowRight, MapPin, Loader2 } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import Card3D from "../components/Card3D";
+import CinematicText from "../components/CinematicText";
 
 const CATEGORIES = ["All", "Tech", "Furniture", "Tools", "Gaming", "Kitchen"];
 
@@ -32,7 +35,6 @@ function Browse() {
 
   const detectLocation = () => {
     if (loc.active) {
-      // Toggle off
       setLoc({ ...loc, active: false });
       return;
     }
@@ -56,9 +58,9 @@ function Browse() {
 
   useEffect(() => {
     setLoading(true);
-    let url = "http://localhost:8000/api/products";
+    let url = `${API_URL}/api/products`;
     if (loc.active && loc.lat && loc.lng) {
-      url += `?lat=${loc.lat}&lng=${loc.lng}&radius=5`; // 5KM strict radius
+      url += `?lat=${loc.lat}&lng=${loc.lng}&radius=5`;
     }
     axios
       .get(url)
@@ -79,13 +81,16 @@ function Browse() {
       <div className="max-w-7xl mx-auto">
 
         {/* Hero Header */}
-        <div className="mb-12 animate-fade-in relative">
+        <div className="mb-12 relative">
           <div className="absolute -top-20 -left-10 w-72 h-72 bg-indigo-600/5 blur-[80px] rounded-full pointer-events-none" />
-          <p className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3">Marketplace</p>
+          <p className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3 cinematic-fade-up">Marketplace</p>
           <h1 className="text-5xl md:text-6xl font-black mb-3">
-            Browse <span className="gradient-text">Rentals</span>
+            <CinematicText text="Browse " stagger={35} delay={100} />
+            <span className="gradient-text">
+              <CinematicText text="Rentals" stagger={35} delay={300} />
+            </span>
           </h1>
-          <p className="text-slate-400 text-lg">Find exactly what you need, on your terms.</p>
+          <p className="text-slate-400 text-lg animate-fade-in delay-200">Find exactly what you need, on your terms.</p>
         </div>
 
         {/* Search + Filters */}
@@ -186,42 +191,44 @@ function Browse() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((product, i) => (
               <Link key={product._id} to={`/product/${product._id}`}>
-                <div
-                  data-reveal
-                  data-delay={`${(i % 8) * 60}`}
-                  className="reveal border-gradient rounded-2xl overflow-hidden card-hover group h-full flex flex-col"
-                  style={{ background: "linear-gradient(145deg, #0d1526, #0a0f1a)", border: "1px solid rgba(20,30,50,1)" }}
-                >
-                  <div className="relative overflow-hidden h-48 flex-shrink-0">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1a] via-transparent to-transparent" />
-                    <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/5 transition-colors duration-500" />
-                    {product.category && (
-                      <span className="absolute top-3 left-3 text-xs font-bold bg-indigo-600/90 backdrop-blur-md text-white px-2.5 py-1 rounded-full border border-indigo-400/20">
-                        {product.category}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-5 flex flex-col flex-1">
-                    <h2 className="font-bold mb-2 line-clamp-1 group-hover:text-indigo-300 transition-colors duration-300">
-                      {product.name}
-                    </h2>
-                    <div className="flex items-end gap-1 mb-1">
-                      <span className="text-indigo-400 font-black text-xl">₹{product.price}</span>
-                      <span className="text-slate-500 text-xs mb-0.5">/mo</span>
+                <Card3D intensity={6}>
+                  <div
+                    data-reveal
+                    data-delay={`${(i % 8) * 60}`}
+                    className="reveal border-gradient rounded-2xl overflow-hidden group h-full flex flex-col"
+                    style={{ background: "linear-gradient(145deg, #0d1526, #0a0f1a)", border: "1px solid rgba(20,30,50,1)" }}
+                  >
+                    <div className="relative overflow-hidden h-48 flex-shrink-0">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1a] via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/5 transition-colors duration-500" />
+                      {product.category && (
+                        <span className="absolute top-3 left-3 text-xs font-bold bg-indigo-600/90 backdrop-blur-md text-white px-2.5 py-1 rounded-full border border-indigo-400/20">
+                          {product.category}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-slate-600 text-xs">₹{product.deposit} deposit</p>
-                    <div className="mt-auto pt-4">
-                      <div className="flex items-center text-xs text-indigo-400 font-semibold group-hover:gap-2 gap-1 transition-all duration-200">
-                        View Details <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                    <div className="p-5 flex flex-col flex-1">
+                      <h2 className="font-bold mb-2 line-clamp-1 group-hover:text-indigo-300 transition-colors duration-300">
+                        {product.name}
+                      </h2>
+                      <div className="flex items-end gap-1 mb-1">
+                        <span className="text-indigo-400 font-black text-xl">₹{product.price}</span>
+                        <span className="text-slate-500 text-xs mb-0.5">/mo</span>
+                      </div>
+                      <p className="text-slate-600 text-xs">₹{product.deposit} deposit</p>
+                      <div className="mt-auto pt-4">
+                        <div className="flex items-center text-xs text-indigo-400 font-semibold group-hover:gap-2 gap-1 transition-all duration-200">
+                          View Details <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card3D>
               </Link>
             ))}
           </div>

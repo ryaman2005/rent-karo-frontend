@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 function Admin(){
 
@@ -10,7 +11,7 @@ const [image,setImage] = useState("");
 
 const handleAddProduct = async ()=>{
 
-await axios.post("http://localhost:8000/api/products",{
+await axios.post(`${API_URL}/api/products`,{
 
 name,
 price,

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { X, Send, Loader2 } from "lucide-react";
 import { getSocket } from "../services/socketService";
+import { API_URL } from "../config";
 
 export default function ChatModal({ rental, onClose }) {
   const [messages, setMessages] = useState([]);
@@ -25,7 +26,7 @@ export default function ChatModal({ rental, onClose }) {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:8000/api/chat/${rental._id}`, {
+        const res = await axios.get(`${API_URL}/api/chat/${rental._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessages(res.data);
@@ -65,7 +66,7 @@ export default function ChatModal({ rental, onClose }) {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:8000/api/chat",
+        `${API_URL}/api/chat`,
         { rentalId: rental._id, text: text.trim(), receiverId },
         { headers: { Authorization: `Bearer ${token}` } }
       );

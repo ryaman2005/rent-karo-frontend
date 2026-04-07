@@ -1,11 +1,13 @@
 import { io } from "socket.io-client";
+import { API_URL } from "../config";
 
 let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    socket = io("http://localhost:8000", {
+    socket = io(API_URL, {
       autoConnect: false,
+      withCredentials: true,
       transports: ["websocket"],
     });
   }

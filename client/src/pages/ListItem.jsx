@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import {
   Package, Tag, IndianRupee, Shield, Image as ImageIcon,
   CheckCircle2, Loader2, ChevronDown, ArrowRight, MapPin
 } from "lucide-react";
+import CinematicText from "../components/CinematicText";
 
 const CATEGORIES = ["Tech", "Furniture", "Tools", "Gaming", "Kitchen", "Sports", "Books", "Other"];
 
@@ -94,7 +96,7 @@ function ListItem() {
       }
 
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/api/products", formData, {
+      await axios.post(`${API_URL}/api/products`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`
@@ -144,11 +146,14 @@ function ListItem() {
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
-        <div className="mb-10 animate-fade-in">
-          <h1 className="text-4xl font-extrabold mb-2">
-            List Your <span className="gradient-text">Item</span>
+        <div className="mb-10">
+          <h1 className="text-4xl font-extrabold mb-2 cinematic-fade-up">
+            <CinematicText text="List Your " stagger={30} delay={100} />
+            <span className="gradient-text">
+              <CinematicText text="Item" stagger={30} delay={300} />
+            </span>
           </h1>
-          <p className="text-gray-400">Fill in the details and start earning from your idle items.</p>
+          <p className="text-gray-400 animate-fade-in delay-200">Fill in the details and start earning from your idle items.</p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">

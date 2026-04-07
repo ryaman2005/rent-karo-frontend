@@ -12,13 +12,15 @@ const productRoutes = require("./routes/productRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const protect = require("./middleware/authMiddleware");
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
 const app = express();
 const server = http.createServer(app);
 
 // ── Socket.io setup ──────────────────────────────────
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: FRONTEND_URL,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   },
@@ -69,7 +71,7 @@ app.set("userSockets", userSockets);
 // ── CORS ─────────────────────────────────────────────
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -96,6 +98,11 @@ mongoose
   .catch((err) => console.log("DB Error:", err));
 
 app.get("/", (req, res) => res.send("rentKaro API running"));
+
+// ── Health check for deployment monitoring ────────────
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

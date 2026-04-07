@@ -1,7 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import { Eye, EyeOff, LogIn, UserPlus, AlertCircle, CheckCircle2, Loader2, Sparkles, Zap, Lock, Users2, ShoppingBag, Store, Home as HomeIcon } from "lucide-react";
+import ParticleField from "../components/ParticleField";
+import CinematicText from "../components/CinematicText";
 
 /* ── Google Sign-In Button (uses Google Identity Services) ── */
 function GoogleButton({ onSuccess, onError, label = "Continue with Google" }) {
@@ -157,12 +160,12 @@ function Login() {
           setLoading(false);
           return;
         }
-        const res = await axios.post("http://localhost:8000/api/auth/register", {
+        const res = await axios.post(`${API_URL}/api/auth/register`, {
           name: form.name, email: form.email, password: form.password, role,
         });
         saveAndRedirect(res.data);
       } else {
-        const res = await axios.post("http://localhost:8000/api/auth/login", {
+        const res = await axios.post(`${API_URL}/api/auth/login`, {
           email: form.email, password: form.password,
         });
         saveAndRedirect(res.data);
@@ -189,7 +192,7 @@ function Login() {
       if (!infoRes.ok) throw new Error("Failed to fetch Google user info");
       const info = await infoRes.json();
 
-      const res = await axios.post("http://localhost:8000/api/auth/google", {
+      const res = await axios.post(`${API_URL}/api/auth/google`, {
         googleId: info.sub,
         name: info.name,
         email: info.email,
@@ -222,6 +225,7 @@ function Login() {
         {/* Orbs */}
         <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-indigo-600/8 blur-[80px] animate-orb1 pointer-events-none" />
         <div className="absolute top-10 right-0 w-60 h-60 rounded-full bg-purple-600/8 blur-[60px] animate-orb2 pointer-events-none" />
+        <ParticleField count={40} color="99,102,241" speed={0.15} />
 
         {/* Logo */}
         <div className="flex items-center gap-2.5">
@@ -234,7 +238,8 @@ function Login() {
         {/* Tagline */}
         <div className="animate-float">
           <h2 className="text-5xl font-black mb-5 leading-tight">
-            The smarter<br />way to{" "}
+            <CinematicText text="The smarter" stagger={35} delay={300} />
+            <br />way to{" "}
             <span className="text-shimmer">rent.</span>
           </h2>
           <p className="text-slate-400 leading-relaxed max-w-xs">

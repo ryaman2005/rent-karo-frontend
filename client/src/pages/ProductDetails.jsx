@@ -1,11 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 import { ArrowLeft, Tag, IndianRupee, Shield, CheckCircle2, X, Loader2, Calendar, MapPin, User } from "lucide-react";
 
 function SkeletonDetail() {
   return (
-    <div className="min-h-screen bg-slate-950 text-white pt-28 pb-16 px-6 flex justify-center">
+    <div className="min-h-screen text-white pt-28 pb-16 px-6 flex justify-center" style={{ background: "#020917" }}>
       <div className="max-w-4xl w-full">
         <div className="skeleton h-6 w-24 rounded mb-8" />
         <div className="grid md:grid-cols-2 gap-10">
@@ -29,8 +30,11 @@ function ConfirmModal({ product, onConfirm, onCancel, loading }) {
   const dep = parseInt(product.deposit || 0);
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-4 animate-fade-in">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center px-4 animate-fade-in">
+      <div
+        className="border border-slate-700/80 rounded-2xl p-8 max-w-md w-full shadow-2xl cinematic-fade-up"
+        style={{ background: "linear-gradient(160deg, #0d1526, #080e1a)", boxShadow: "0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.1)" }}
+      >
         <div className="flex items-start justify-between mb-6">
           <h3 className="text-xl font-bold">Confirm Rental</h3>
           <button onClick={onCancel} className="text-gray-500 hover:text-white transition">
@@ -51,7 +55,7 @@ function ConfirmModal({ product, onConfirm, onCancel, loading }) {
             <select
               value={duration}
               onChange={(e) => setDuration(parseInt(e.target.value))}
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-slate-800/80 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-indigo-500 transition-colors"
             >
               {[...Array(12)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
@@ -65,7 +69,7 @@ function ConfirmModal({ product, onConfirm, onCancel, loading }) {
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-xl p-4 mb-6 space-y-3">
+        <div className="bg-slate-800/60 rounded-xl p-4 mb-6 space-y-3 border border-slate-700/50">
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Monthly Rent</span>
             <span className="font-semibold text-indigo-400">₹{mPrice}/mo</span>
@@ -120,7 +124,7 @@ function ProductDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/products/${id}`)
+      .get(`${API_URL}/api/products/${id}`)
       .then((res) => setProduct(res.data))
       .catch((err) => console.log(err));
   }, [id]);
@@ -132,7 +136,7 @@ function ProductDetails() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:8000/api/rentals",
+        `${API_URL}/api/rentals`,
         { 
           productId: product._id,
           productName: product.name, 
@@ -163,7 +167,7 @@ function ProductDetails() {
         />
       )}
 
-      <div className="min-h-screen bg-slate-950 text-white pt-28 pb-16 px-6">
+      <div className="min-h-screen text-white pt-28 pb-16 px-6" style={{ background: "#020917" }}>
         <div className="max-w-4xl mx-auto">
 
           {/* Back */}
@@ -186,10 +190,10 @@ function ProductDetails() {
             </div>
           )}
 
-          <div className="grid md:grid-cols-2 gap-10 animate-fade-in">
+          <div className="grid md:grid-cols-2 gap-10">
 
-            {/* Image */}
-            <div className="rounded-2xl overflow-hidden h-80 md:h-auto">
+            {/* Image — Cinematic reveal */}
+            <div className="rounded-2xl overflow-hidden h-80 md:h-auto cinematic-image-reveal">
               <img
                 src={product.image}
                 alt={product.name}
@@ -198,7 +202,7 @@ function ProductDetails() {
             </div>
 
             {/* Info */}
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between cinematic-fade-up">
               <div>
                 {product.category && (
                   <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-3 py-1 rounded-full mb-4">
@@ -211,14 +215,14 @@ function ProductDetails() {
 
                 {/* Specs Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
                     <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
                       <IndianRupee size={12} /> Monthly Rent
                     </div>
                     <p className="text-2xl font-bold text-indigo-400">₹{product.price}</p>
                     <p className="text-gray-600 text-xs">per month</p>
                   </div>
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
                     <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
                       <Shield size={12} /> Security Deposit
                     </div>

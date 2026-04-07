@@ -1,0 +1,8 @@
+node_modules
+.env
+.DS_Store
+dummy.jpg
+test-db.js
+test-db2.js
+test-email.js
+test-upload.js
