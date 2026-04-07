@@ -11,12 +11,12 @@ const CATEGORIES = ["All", "Tech", "Furniture", "Tools", "Gaming", "Kitchen"];
 
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl overflow-hidden border border-slate-800/80" style={{ background: "#0a0f1a" }}>
-      <div className="skeleton h-48 w-full" />
+    <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'hsl(var(--border))', backgroundColor: 'hsl(var(--muted))' }}>
+      <div className="h-48 w-full" style={{ backgroundColor: 'hsl(var(--border))' }} />
       <div className="p-5 space-y-3">
-        <div className="skeleton h-5 w-2/3 rounded" />
-        <div className="skeleton h-4 w-1/3 rounded" />
-        <div className="skeleton h-4 w-1/2 rounded" />
+        <div className="h-5 w-2/3 rounded" style={{ backgroundColor: 'hsl(var(--border))' }} />
+        <div className="h-4 w-1/3 rounded" style={{ backgroundColor: 'hsl(var(--border))' }} />
+        <div className="h-4 w-1/2 rounded" style={{ backgroundColor: 'hsl(var(--border))' }} />
       </div>
     </div>
   );
@@ -34,69 +34,51 @@ function Browse() {
   useScrollReveal(pageRef, [loading, loc.active]);
 
   const detectLocation = () => {
-    if (loc.active) {
-      setLoc({ ...loc, active: false });
-      return;
-    }
+    if (loc.active) { setLoc({ ...loc, active: false }); return; }
     setLocLoading(true);
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
-      setLocLoading(false);
-      return;
-    }
+    if (!navigator.geolocation) { alert("Geolocation is not supported by your browser"); setLocLoading(false); return; }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude, active: true });
-        setLocLoading(false);
-      },
-      (err) => {
-        alert("Unable to retrieve your location. Please allow location access.");
-        setLocLoading(false);
-      }
+      (pos) => { setLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude, active: true }); setLocLoading(false); },
+      () => { alert("Unable to retrieve your location. Please allow location access."); setLocLoading(false); }
     );
   };
 
   useEffect(() => {
     setLoading(true);
     let url = `${API_URL}/api/products`;
-    if (loc.active && loc.lat && loc.lng) {
-      url += `?lat=${loc.lat}&lng=${loc.lng}&radius=5`;
-    }
-    axios
-      .get(url)
+    if (loc.active && loc.lat && loc.lng) url += `?lat=${loc.lat}&lng=${loc.lng}&radius=5`;
+    axios.get(url)
       .then((res) => { setProducts(res.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, [loc.active, loc.lat, loc.lng]);
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchCat =
-      activeCategory === "All" ||
-      (p.category && p.category.toLowerCase() === activeCategory.toLowerCase());
+    const matchCat = activeCategory === "All" || (p.category && p.category.toLowerCase() === activeCategory.toLowerCase());
     return matchSearch && matchCat;
   });
 
   return (
-    <div ref={pageRef} className="min-h-screen text-white pt-28 pb-20 px-6" style={{ background: "#020917" }}>
+    <div ref={pageRef} className="min-h-screen pt-28 pb-20 px-6" style={{ backgroundColor: 'hsl(var(--background))' }}>
       <div className="max-w-7xl mx-auto">
 
         {/* Hero Header */}
         <div className="mb-12 relative">
-          <div className="absolute -top-20 -left-10 w-72 h-72 bg-indigo-600/5 blur-[80px] rounded-full pointer-events-none" />
-          <p className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3 cinematic-fade-up">Marketplace</p>
-          <h1 className="text-5xl md:text-6xl font-black mb-3">
-            <CinematicText text="Browse " stagger={35} delay={100} />
-            <span className="gradient-text">
-              <CinematicText text="Rentals" stagger={35} delay={300} />
-            </span>
+          <p className="text-sm font-semibold tracking-widest uppercase mb-3 animate-fade-in" style={{ color: 'hsl(var(--primary))' }}>Marketplace</p>
+          <h1 className="text-5xl md:text-6xl font-black mb-3 font-display" style={{ color: 'hsl(var(--foreground))' }}>
+            Browse{" "}
+            <span style={{ color: 'hsl(var(--primary))' }}>Rentals</span>
           </h1>
-          <p className="text-slate-400 text-lg animate-fade-in delay-200">Find exactly what you need, on your terms.</p>
+          <p className="text-lg animate-fade-in delay-200" style={{ color: 'hsl(var(--muted-foreground))' }}>
+            Find exactly what you need, on your terms.
+          </p>
         </div>
 
         {/* Search + Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 animate-fade-in delay-100">
+          {/* Search input */}
           <div className="relative flex-1">
-            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--muted-foreground))' }} />
             <input
               type="text"
               placeholder="Search for items..."
@@ -107,44 +89,51 @@ function Browse() {
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition"
+                className="absolute right-4 top-1/2 -translate-y-1/2 transition"
+                style={{ color: 'hsl(var(--muted-foreground))' }}
               >
                 <X size={16} />
               </button>
             )}
           </div>
 
+          {/* Location + Category Pills */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={detectLocation}
               disabled={locLoading}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1.5 ${
+              className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1.5 border"
+              style={
                 loc.active
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 scale-105"
-                  : "bg-slate-800/70 text-slate-400 hover:bg-slate-700/70 hover:text-white border border-slate-700/60"
-              }`}
+                  ? { backgroundColor: '#dcfce7', color: '#15803d', borderColor: '#86efac' }
+                  : { backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--muted-foreground))', borderColor: 'hsl(var(--border))' }
+              }
             >
               {locLoading ? <Loader2 size={14} className="animate-spin" /> : <MapPin size={14} />}
               {loc.active ? "Local (5km)" : "Local Only"}
             </button>
-            <div className="w-px h-6 bg-slate-800 mx-1"></div>
+
+            <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--border))' }} />
+
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeCategory === cat
-                    ? "text-white scale-105"
-                    : "bg-slate-800/70 text-slate-400 hover:bg-slate-700/70 hover:text-white border border-slate-700/60"
-                }`}
+                className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border"
                 style={
                   activeCategory === cat
                     ? {
-                        background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-                        boxShadow: "0 0 16px rgba(99,102,241,0.4)",
-                        border: "1px solid rgba(99,102,241,0.4)",
+                        backgroundColor: 'hsl(var(--primary))',
+                        color: '#fff',
+                        borderColor: 'hsl(var(--primary))',
+                        boxShadow: '0 4px 14px hsl(var(--primary) / 0.3)',
+                        transform: 'scale(1.05)',
                       }
-                    : {}
+                    : {
+                        backgroundColor: 'hsl(var(--secondary))',
+                        color: 'hsl(var(--muted-foreground))',
+                        borderColor: 'hsl(var(--border))',
+                      }
                 }
               >
                 {cat}
@@ -155,11 +144,11 @@ function Browse() {
 
         {/* Results count */}
         {!loading && (
-          <p className="text-slate-500 text-sm mb-8 animate-fade-in">
-            <span className="text-indigo-400 font-semibold">{filtered.length}</span>{" "}
+          <p className="text-sm mb-8 animate-fade-in" style={{ color: 'hsl(var(--muted-foreground))' }}>
+            <span className="font-semibold" style={{ color: 'hsl(var(--primary))' }}>{filtered.length}</span>{" "}
             {filtered.length === 1 ? "item" : "items"}
             {search && (
-              <> for "<span className="text-white">{search}</span>"</>
+              <> for "<span style={{ color: 'hsl(var(--foreground))' }}>{search}</span>"</>
             )}
           </p>
         )}
@@ -172,13 +161,13 @@ function Browse() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-28 animate-fade-in">
             <div
-              className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-              style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.15)" }}
+              className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center border"
+              style={{ backgroundColor: 'hsl(var(--secondary))', borderColor: 'hsl(var(--border))' }}
             >
-              <Package size={36} className="text-slate-600" />
+              <Package size={36} style={{ color: 'hsl(var(--muted-foreground))' }} />
             </div>
-            <h3 className="text-2xl font-bold text-slate-400 mb-2">No items found</h3>
-            <p className="text-slate-600 mb-8">
+            <h3 className="text-2xl font-bold mb-2" style={{ color: 'hsl(var(--foreground))' }}>No items found</h3>
+            <p className="mb-8" style={{ color: 'hsl(var(--muted-foreground))' }}>
               {search ? `Try a different keyword.` : "No items in this category yet."}
             </p>
             {search && (
@@ -191,38 +180,52 @@ function Browse() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((product, i) => (
               <Link key={product._id} to={`/product/${product._id}`}>
-                <Card3D intensity={6}>
+                <Card3D intensity={4}>
                   <div
                     data-reveal
                     data-delay={`${(i % 8) * 60}`}
-                    className="reveal border-gradient rounded-2xl overflow-hidden group h-full flex flex-col"
-                    style={{ background: "linear-gradient(145deg, #0d1526, #0a0f1a)", border: "1px solid rgba(20,30,50,1)" }}
+                    className="reveal rounded-2xl overflow-hidden group h-full flex flex-col border transition-all duration-200"
+                    style={{
+                      backgroundColor: 'hsl(var(--card))',
+                      borderColor: 'hsl(var(--border))',
+                      boxShadow: 'var(--shadow-card)',
+                    }}
                   >
+                    {/* Image */}
                     <div className="relative overflow-hidden h-48 flex-shrink-0">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1a] via-transparent to-transparent" />
-                      <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/5 transition-colors duration-500" />
                       {product.category && (
-                        <span className="absolute top-3 left-3 text-xs font-bold bg-indigo-600/90 backdrop-blur-md text-white px-2.5 py-1 rounded-full border border-indigo-400/20">
+                        <span
+                          className="absolute top-3 left-3 text-xs font-bold text-white px-2.5 py-1 rounded-full"
+                          style={{ backgroundColor: 'hsl(var(--primary))' }}
+                        >
                           {product.category}
                         </span>
                       )}
                     </div>
+
+                    {/* Info */}
                     <div className="p-5 flex flex-col flex-1">
-                      <h2 className="font-bold mb-2 line-clamp-1 group-hover:text-indigo-300 transition-colors duration-300">
+                      <h2
+                        className="font-bold mb-2 line-clamp-1 transition-colors duration-200"
+                        style={{ color: 'hsl(var(--foreground))' }}
+                      >
                         {product.name}
                       </h2>
                       <div className="flex items-end gap-1 mb-1">
-                        <span className="text-indigo-400 font-black text-xl">₹{product.price}</span>
-                        <span className="text-slate-500 text-xs mb-0.5">/mo</span>
+                        <span className="font-black text-xl" style={{ color: 'hsl(var(--primary))' }}>₹{product.price}</span>
+                        <span className="text-xs mb-0.5" style={{ color: 'hsl(var(--muted-foreground))' }}>/mo</span>
                       </div>
-                      <p className="text-slate-600 text-xs">₹{product.deposit} deposit</p>
+                      <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>₹{product.deposit} deposit</p>
                       <div className="mt-auto pt-4">
-                        <div className="flex items-center text-xs text-indigo-400 font-semibold group-hover:gap-2 gap-1 transition-all duration-200">
+                        <div
+                          className="flex items-center text-xs font-semibold gap-1 group-hover:gap-2 transition-all duration-200"
+                          style={{ color: 'hsl(var(--primary))' }}
+                        >
                           View Details <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>

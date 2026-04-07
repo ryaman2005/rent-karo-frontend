@@ -17,7 +17,7 @@ import Card3D from "../components/Card3D";
 /* ── Skeleton Card ── */
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl overflow-hidden border border-slate-800/60" style={{ background: "#0a0f1a" }}>
+    <div className="rounded-2xl overflow-hidden border border-[hsl(var(--border))]/60" style={{ backgroundColor: 'hsl(var(--muted))' }}>
       <div className="skeleton h-60 w-full" />
       <div className="p-6 space-y-3">
         <div className="skeleton h-5 w-3/4 rounded" />
@@ -46,7 +46,7 @@ const MARQUEE_ITEMS = [
 const CATEGORIES = ["All", "Tech", "Furniture", "Tools", "Gaming", "Kitchen"];
 
 const STATS = [
-  { value: "500+", label: "Items Listed",    icon: <Package   size={20} className="text-indigo-400" /> },
+  { value: "500+", label: "Items Listed",    icon: <Package   size={20} className="text-[hsl(var(--primary))]" /> },
   { value: "1.2K+", label: "Active Renters", icon: <Users     size={20} className="text-violet-400" /> },
   { value: "15+",  label: "Cities Covered",  icon: <MapPin    size={20} className="text-sky-400"    /> },
   { value: "₹0",   label: "Hidden Charges",  icon: <BadgeCheck size={20} className="text-emerald-400" /> },
@@ -54,12 +54,12 @@ const STATS = [
 
 const HOW_IT_WORKS = [
   {
-    icon: <Search className="w-6 h-6 text-indigo-400" />,
+    icon: <Search className="w-6 h-6 text-[hsl(var(--primary))]" />,
     title: "Browse & Discover",
     desc: "Search hundreds of verified listings across categories — tech, furniture, tools, and more.",
     step: "01",
-    accent: "indigo",
-    border: "border-indigo-500/15 hover:border-indigo-500/40",
+    accent: "blue",
+    border: "border-[hsl(var(--primary)/0.3)]/15 hover:border-[hsl(var(--border))]",
     bg: "rgba(79,70,229,0.06)",
     glow: "rgba(99,102,241,0.25)",
   },
@@ -87,7 +87,7 @@ const HOW_IT_WORKS = [
 
 const TRUST_ITEMS = [
   { icon: <Shield size={18} className="text-emerald-400" />, title: "Verified Listings", desc: "Every item is reviewed and verified before going live." },
-  { icon: <BadgeCheck size={18} className="text-indigo-400" />, title: "Secure Payments", desc: "Deposits and payments are handled safely." },
+  { icon: <BadgeCheck size={18} className="text-[hsl(var(--primary))]" />, title: "Secure Payments", desc: "Deposits and payments are handled safely." },
   { icon: <Clock size={18} className="text-violet-400" />, title: "Flexible Duration", desc: "Rent for a month or a year — completely up to you." },
   { icon: <TrendingUp size={18} className="text-sky-400" />, title: "Best Market Price", desc: "Competitive pricing across all categories." },
 ];
@@ -121,7 +121,7 @@ function Home() {
         );
 
   return (
-    <div ref={pageRef} className="min-h-screen text-white overflow-x-hidden" style={{ background: "#020917" }}>
+    <div ref={pageRef} className="min-h-screen text-[hsl(var(--foreground))] overflow-x-hidden bg-[hsl(var(--secondary))]">
 
       {/* ── HERO ── */}
       <section className="relative flex flex-col items-center justify-center text-center px-6 pt-40 pb-32 overflow-hidden parallax-hero">
@@ -132,7 +132,7 @@ function Home() {
         {/* Background mesh — parallax layers */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div
-            className="parallax-layer animate-orb1 absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-600/6 blur-[120px]"
+            className="parallax-layer animate-orb1 absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-[hsl(var(--primary))]/6 blur-[120px]"
             style={{ transform: `translate(${parallax.x * 2}px, ${parallax.y * 2}px)` }}
           />
           <div
@@ -167,25 +167,25 @@ function Home() {
         ))}
 
         {/* Badge */}
-        <div className="animate-fade-in delay-100 inline-flex items-center gap-2 text-indigo-300 text-sm px-5 py-2.5 rounded-full mb-10 cursor-default"
-          style={{ background: "rgba(79,70,229,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}>
-          <Star size={12} className="fill-indigo-400 text-indigo-400" />
+        <div className="animate-fade-in delay-100 inline-flex items-center gap-2 text-sm px-5 py-2.5 rounded-full mb-10 cursor-default font-medium"
+          style={{ background: 'hsl(var(--primary) / 0.08)', border: '1px solid hsl(var(--primary) / 0.2)', color: 'hsl(var(--primary))' }}>
+          <Star size={12} className="fill-current" />
           India's Premier Rental Marketplace
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </div>
 
         {/* Cinematic Headline */}
-        <h1 className="text-6xl md:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl cinematic-fade-up">
+        <h1 className="text-6xl md:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl animate-fade-in font-display" style={{ color: 'hsl(var(--foreground))' }}>
           <CinematicText text="Rent Smarter." stagger={40} delay={200} />
           <br />
-          <span className="text-shimmer">
+          <span style={{ color: 'hsl(var(--primary))' }}>
             <CinematicText text="Live Better." stagger={40} delay={600} />
           </span>
         </h1>
 
-        <p className="animate-fade-in delay-300 mt-7 text-slate-400 max-w-2xl text-xl leading-relaxed font-light">
+        <p className="animate-fade-in delay-300 mt-7 max-w-2xl text-xl leading-relaxed font-light" style={{ color: 'hsl(var(--muted-foreground))' }}>
           Access furniture, gadgets, tools and appliances on{" "}
-          <span className="text-white font-medium">flexible monthly plans</span>.
+          <span className="font-semibold" style={{ color: 'hsl(var(--foreground))' }}>flexible monthly plans</span>.
           No ownership burden. No long-term lock-in.
         </p>
 
@@ -207,12 +207,12 @@ function Home() {
           {STATS.map((stat, i) => (
             <div
               key={stat.label}
-              className="glass-card rounded-2xl p-5 text-center cursor-default group hover:border-indigo-500/20 transition-colors animate-border-pulse"
+              className="glass-card rounded-2xl p-5 text-center cursor-default group hover:border-[hsl(var(--border))] transition-colors animate-border-pulse"
               style={{ animationDelay: `${i * 0.7}s` }}
             >
               <div className="flex justify-center mb-2">{stat.icon}</div>
-              <p className="text-3xl font-black gradient-text">{stat.value}</p>
-              <p className="text-slate-500 text-xs mt-1 font-medium">{stat.label}</p>
+              <p className="text-3xl font-black text-[hsl(var(--foreground))]">{stat.value}</p>
+              <p className="text-[hsl(var(--muted-foreground))] text-xs mt-1 font-medium">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -222,13 +222,13 @@ function Home() {
       <div className="cinematic-divider" />
 
       {/* ── MARQUEE TICKER ── */}
-      <div className="relative py-4 border-y border-slate-800/40 overflow-hidden" style={{ background: "rgba(10,15,30,0.5)" }}>
+      <div className="relative py-4 border-y border-[hsl(var(--border))] overflow-hidden bg-[hsl(var(--card))]">
         <div className="flex animate-marquee">
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-            <span key={i} className="flex items-center gap-2 px-7 text-slate-500 text-sm font-medium whitespace-nowrap">
-              <span className="text-indigo-500">{item.icon}</span>
+            <span key={i} className="flex items-center gap-2 px-7 text-[hsl(var(--muted-foreground))] text-sm font-medium whitespace-nowrap">
+              <span className="text-[hsl(var(--primary))]">{item.icon}</span>
               {item.text}
-              <span className="w-px h-4 bg-slate-700/80 ml-4 flex-shrink-0" />
+              <span className="w-px h-4 bg-slate-200 ml-4 flex-shrink-0" />
             </span>
           ))}
         </div>
@@ -238,13 +238,13 @@ function Home() {
       <section className="py-28 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <p data-reveal className="reveal text-indigo-400 text-xs font-bold tracking-widest uppercase mb-3">
+            <p data-reveal className="reveal text-[hsl(var(--primary))] text-xs font-bold tracking-widest uppercase mb-3">
               Simple Process
             </p>
             <h2 data-reveal data-delay="100" className="reveal text-4xl md:text-5xl font-black mb-4">
               How <span className="gradient-text">rentKaro</span> Works
             </h2>
-            <p data-reveal data-delay="200" className="reveal text-slate-400 max-w-md mx-auto text-base">
+            <p data-reveal data-delay="200" className="reveal text-[hsl(var(--muted-foreground))] max-w-md mx-auto text-base">
               From browsing to returning — seamless at every step.
             </p>
           </div>
@@ -254,23 +254,21 @@ function Home() {
               style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent)" }} />
 
             {HOW_IT_WORKS.map((item, i) => (
-              <Card3D key={item.step} intensity={6}>
+              <Card3D key={item.step} intensity={4}>
                 <div
                   data-reveal data-delay={`${i * 120}`}
-                  className={`reveal-scale reveal rounded-2xl p-8 border transition-all duration-500 group cursor-default relative overflow-hidden ${item.border}`}
-                  style={{ background: item.bg + ", #0a0f1a" }}
+                  className={`reveal rounded-2xl p-8 bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm hover:shadow-md transition-all duration-300 group cursor-default relative overflow-hidden`}
                 >
-                  <span className="absolute top-5 right-6 text-5xl font-black text-slate-800/50 select-none group-hover:text-slate-700/50 transition-colors font-mono">
+                  <span className="absolute top-5 right-6 text-5xl font-black text-slate-100 select-none font-mono">
                     {item.step}
                   </span>
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-                    style={{ background: item.bg, border: `1px solid ${item.glow.replace("0.25", "0.3")}`, boxShadow: `0 0 16px ${item.glow}` }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--border))] group-hover:scale-110 transition-transform duration-300"
                   >
                     {item.icon}
                   </div>
-                  <h3 className="text-lg font-bold mb-3">{item.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                  <h3 className="text-lg font-bold mb-3 text-[hsl(var(--foreground))]">{item.title}</h3>
+                  <p className="text-[hsl(var(--muted-foreground))] text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </Card3D>
             ))}
@@ -279,18 +277,17 @@ function Home() {
       </section>
 
       {/* ── TRUST SIGNALS ── */}
-      <section className="py-16 px-6" style={{ background: "rgba(8,12,25,0.6)" }}>
+      <section className="py-16 px-6 bg-[hsl(var(--card))] border-y border-slate-100">
         <div className="max-w-5xl mx-auto">
           <div data-reveal className="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
             {TRUST_ITEMS.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl p-5 border border-slate-800/60 hover:border-slate-700/60 transition-colors group"
-                style={{ background: "rgba(10,15,30,0.8)" }}
+                className="rounded-2xl p-5 border border-slate-100 hover:border-[hsl(var(--border))] hover:shadow-sm transition-all duration-200 group bg-[hsl(var(--secondary))]"
               >
                 <div className="mb-3">{item.icon}</div>
-                <p className="font-semibold text-sm text-slate-200 mb-1">{item.title}</p>
-                <p className="text-slate-500 text-xs leading-relaxed">{item.desc}</p>
+                <p className="font-semibold text-sm text-[hsl(var(--foreground))] mb-1">{item.title}</p>
+                <p className="text-[hsl(var(--muted-foreground))] text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -307,13 +304,13 @@ function Home() {
 
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <p data-reveal className="reveal text-indigo-400 text-xs font-bold tracking-widest uppercase mb-3">
+            <p data-reveal className="reveal text-[hsl(var(--primary))] text-xs font-bold tracking-widest uppercase mb-3">
               Marketplace
             </p>
             <h2 data-reveal data-delay="100" className="reveal text-4xl md:text-5xl font-black mb-3">
               Featured <span className="gradient-text">Listings</span>
             </h2>
-            <p data-reveal data-delay="200" className="reveal text-slate-400 mb-12 text-base">
+            <p data-reveal data-delay="200" className="reveal text-[hsl(var(--muted-foreground))] mb-12 text-base">
               Handpicked items available to rent today.
             </p>
           </div>
@@ -327,13 +324,13 @@ function Home() {
                 className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                   activeCategory === cat
                     ? "text-white scale-105"
-                    : "text-slate-400 hover:text-white border border-slate-700/60 hover:border-slate-600"
+                    : "text-[hsl(var(--muted-foreground))] hover:text-white border border-[hsl(var(--border))]/60 hover:border-slate-600"
                 }`}
                 style={
                   activeCategory === cat
                     ? {
-                        background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-                        boxShadow: "0 0 20px rgba(99,102,241,0.35), 0 4px 12px rgba(0,0,0,0.4)",
+                        backgroundColor: 'hsl(var(--primary))',
+                        boxShadow: '0 4px 14px hsl(var(--primary) / 0.35)',
                         border: "1px solid rgba(99,102,241,0.5)",
                       }
                     : { background: "rgba(15,23,42,0.6)" }
@@ -351,51 +348,47 @@ function Home() {
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-20 animate-fade-in">
-              <Package size={52} className="text-slate-700 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-400">No items in this category</h3>
-              <p className="text-slate-600 mt-2 text-sm">Try selecting a different category.</p>
+              <Package size={52} className="text-[hsl(var(--secondary-foreground))] mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-[hsl(var(--muted-foreground))]">No items in this category</h3>
+              <p className="text-[hsl(var(--muted-foreground))] mt-2 text-sm">Try selecting a different category.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product, i) => (
-                <Card3D key={product._id} intensity={6}>
+                <Card3D key={product._id} intensity={4}>
                   <div
                     data-reveal data-delay={`${i * 80}`}
-                    className="reveal border-gradient rounded-2xl overflow-hidden group cursor-pointer"
-                    style={{ background: "linear-gradient(160deg, #0d1526, #080e1a)", border: "1px solid rgba(20,30,50,1)" }}
+                    className="reveal bg-[hsl(var(--card))] rounded-2xl overflow-hidden group cursor-pointer border border-[hsl(var(--border))] shadow-sm hover:shadow-lg transition-all duration-300"
                     onClick={() => navigate(`/product/${product._id}`)}
                   >
                     <div className="relative overflow-hidden h-56">
                       <img
                         src={product.image} alt={product.name}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#080e1a] via-transparent to-transparent" />
-                      <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/5 transition-colors duration-500" />
                       {product.category && (
-                        <span className="absolute top-4 left-4 text-xs font-semibold backdrop-blur-md text-white px-3 py-1.5 rounded-lg"
-                          style={{ background: "rgba(79,70,229,0.85)", border: "1px solid rgba(99,102,241,0.4)" }}>
+                        <span className="absolute top-3 left-3 text-xs font-semibold text-white bg-[hsl(var(--primary))] px-2.5 py-1 rounded-md">
                           {product.category}
                         </span>
                       )}
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold mb-1 group-hover:text-indigo-300 transition-colors duration-300 line-clamp-1">
+                    <div className="p-5">
+                      <h3 className="text-base font-bold mb-1 group-hover:text-[hsl(var(--primary))] transition-colors duration-200 line-clamp-1 text-[hsl(var(--foreground))]">
                         {product.name}
                       </h3>
                       <div className="flex items-end gap-1 mb-1">
-                        <span className="text-indigo-400 font-black text-2xl">₹{product.price}</span>
-                        <span className="text-slate-500 text-sm mb-0.5">/month</span>
+                        <span className="text-[hsl(var(--primary))] font-black text-xl">₹{product.price}</span>
+                        <span className="text-[hsl(var(--muted-foreground)/0.7)] text-sm mb-0.5">/month</span>
                       </div>
-                      <p className="text-slate-500 text-sm">
-                        <span className="text-slate-400">₹{product.deposit}</span> refundable deposit
+                      <p className="text-[hsl(var(--muted-foreground)/0.7)] text-xs">
+                        ₹{product.deposit} refundable deposit
                       </p>
                       <button
-                        className="mt-5 w-full btn-primary flex items-center justify-center gap-2 text-white text-sm"
+                        className="mt-4 w-full btn-primary font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
                         onClick={(e) => { e.stopPropagation(); navigate(`/product/${product._id}`); }}
                       >
                         <span>View Details</span>
-                        <ChevronRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                        <ChevronRight size={15} />
                       </button>
                     </div>
                   </div>
@@ -416,32 +409,25 @@ function Home() {
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section className="py-28 px-6 relative overflow-hidden">
-        <ParticleField count={30} color="99,102,241" speed={0.15} />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-indigo-600/5 blur-[80px] rounded-full animate-glow-pulse" />
-        </div>
-        <div data-reveal className="reveal max-w-3xl mx-auto text-center animated-border p-px rounded-3xl relative z-10">
-          <div className="rounded-3xl px-10 py-16" style={{ background: "#060b18" }}>
-            <div className="w-12 h-12 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-              style={{ background: "rgba(79,70,229,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}>
-              <Sparkles size={22} className="text-indigo-400" />
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black mb-4">
-              Ready to get started?
-            </h2>
-            <p className="text-slate-400 mb-10 max-w-lg mx-auto text-lg leading-relaxed">
-              Join thousands of renters and owners on rentKaro. Start renting or earning today.
-            </p>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <button onClick={() => navigate("/browse")} className="btn-primary flex items-center gap-2 px-10 py-4 text-base text-white">
-                <span>Browse Listings</span>
-                <ArrowRight size={18} />
-              </button>
-              <button onClick={() => navigate("/list-item")} className="btn-secondary flex items-center gap-2 px-10 py-4 text-base">
-                List Your Items
-              </button>
-            </div>
+      <section className="py-24 px-6" style={{ backgroundColor: 'hsl(var(--primary))' }}>
+        <div data-reveal className="reveal max-w-3xl mx-auto text-center">
+          <div className="w-12 h-12 rounded-2xl mx-auto mb-6 flex items-center justify-center bg-white/20">
+            <Sparkles size={22} className="text-white" />
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black mb-4 text-white font-display">
+            Ready to get started?
+          </h2>
+          <p className="mb-10 max-w-lg mx-auto text-lg leading-relaxed" style={{ color: 'hsl(0 0% 100% / 0.85)' }}>
+            Join thousands of renters and owners on rentKaro. Start renting or earning today.
+          </p>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <button onClick={() => navigate("/browse")} className="bg-white font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2 text-base" style={{ color: 'hsl(var(--primary))' }}>
+              <span>Browse Listings</span>
+              <ArrowRight size={18} />
+            </button>
+            <button onClick={() => navigate("/list-item")} className="bg-transparent border-2 border-white/60 text-white font-semibold px-10 py-4 rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-base">
+              List Your Items
+            </button>
           </div>
         </div>
       </section>

@@ -113,13 +113,13 @@ function ListItem() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-6 pt-20">
+      <div className="min-h-screen flex items-center justify-center px-6 pt-20" style={{ backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
         <div className="text-center animate-fade-in max-w-md">
           <div className="w-20 h-20 rounded-full bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6 animate-pulse-ring">
             <CheckCircle2 size={40} className="text-emerald-400" />
           </div>
           <h2 className="text-3xl font-bold mb-3">Item Listed!</h2>
-          <p className="text-gray-400 mb-8">
+          <p className="text-[hsl(var(--muted-foreground))] mb-8">
             Your item is now live on rentKaro. Renters can find it right away.
           </p>
           <div className="flex gap-4 justify-center">
@@ -142,18 +142,18 @@ function ListItem() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pt-28 pb-16 px-6">
+    <div className="min-h-screen pt-28 pb-16 px-6" style={{ backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-extrabold mb-2 cinematic-fade-up">
+          <h1 className="text-4xl font-extrabold mb-2 animate-fade-in">
             <CinematicText text="List Your " stagger={30} delay={100} />
             <span className="gradient-text">
               <CinematicText text="Item" stagger={30} delay={300} />
             </span>
           </h1>
-          <p className="text-gray-400 animate-fade-in delay-200">Fill in the details and start earning from your idle items.</p>
+          <p className="text-[hsl(var(--muted-foreground))] animate-fade-in delay-200">Fill in the details and start earning from your idle items.</p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">
@@ -161,11 +161,11 @@ function ListItem() {
           {/* Form */}
           <form
             onSubmit={handleSubmit}
-            className="lg:col-span-3 bg-slate-900 p-8 rounded-2xl border border-slate-800 space-y-5 animate-fade-in delay-100"
+            className="lg:col-span-3 bg-[hsl(var(--card))] p-8 rounded-2xl border border-[hsl(var(--border))] space-y-5 animate-fade-in delay-100"
           >
             {/* Name */}
             <div>
-              <label className="text-sm text-gray-400 mb-1.5 flex items-center gap-2">
+              <label className="text-sm text-[hsl(var(--muted-foreground))] mb-1.5 flex items-center gap-2">
                 <Package size={14} /> Item Name
               </label>
               <input
@@ -180,7 +180,7 @@ function ListItem() {
 
             {/* Category */}
             <div>
-              <label className="text-sm text-gray-400 mb-1.5 flex items-center gap-2">
+              <label className="text-sm text-[hsl(var(--muted-foreground))] mb-1.5 flex items-center gap-2">
                 <Tag size={14} /> Category
               </label>
               <div className="relative">
@@ -196,14 +196,14 @@ function ListItem() {
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
-                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--muted-foreground))] pointer-events-none" />
               </div>
             </div>
 
             {/* Price + Deposit */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-400 mb-1.5 flex items-center gap-2">
+                <label className="text-sm text-[hsl(var(--muted-foreground))] mb-1.5 flex items-center gap-2">
                   <IndianRupee size={14} /> Monthly Rent
                 </label>
                 <input
@@ -217,7 +217,7 @@ function ListItem() {
                 />
               </div>
               <div>
-                <label className="text-sm text-gray-400 mb-1.5 flex items-center gap-2">
+                <label className="text-sm text-[hsl(var(--muted-foreground))] mb-1.5 flex items-center gap-2">
                   <Shield size={14} /> Security Deposit
                 </label>
                 <input
@@ -234,7 +234,7 @@ function ListItem() {
 
             {/* Location */}
             <div>
-              <label className="text-sm text-gray-400 mb-1.5 flex items-center justify-between">
+              <label className="text-sm text-[hsl(var(--muted-foreground))] mb-1.5 flex items-center justify-between">
                 <span className="flex items-center gap-2"><MapPin size={14} /> Item Location (Required for local search)</span>
               </label>
               <div className="flex gap-2">
@@ -252,7 +252,7 @@ function ListItem() {
                   className={`px-4 rounded-xl flex items-center justify-center border transition-all ${
                     loc.lat && loc.lng 
                     ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" 
-                    : "bg-slate-800 border-slate-700 text-gray-400 hover:text-white"
+                    : "bg-[hsl(var(--muted))] border-[hsl(var(--border))] text-[hsl(var(--muted-foreground))] hover:"
                   }`}
                 >
                   {locLoading ? <Loader2 size={16} className="animate-spin" /> : <MapPin size={16} />}
@@ -262,7 +262,7 @@ function ListItem() {
 
             {/* Image Upload */}
             <div>
-              <label className="text-sm text-gray-400 mb-1.5 flex items-center gap-2">
+              <label className="text-sm text-[hsl(var(--muted-foreground))] mb-1.5 flex items-center gap-2">
                 <ImageIcon size={14} /> Upload Image
               </label>
               <div className="relative">
@@ -270,7 +270,7 @@ function ListItem() {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setFile(e.target.files[0])}
-                  className="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600/10 file:text-indigo-400 hover:file:bg-indigo-600/20 file:transition-colors bg-slate-900 border border-slate-700 rounded-xl cursor-pointer"
+                  className="w-full text-sm text-[hsl(var(--muted-foreground))] file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[hsl(var(--primary)/0.08)] file:text-[hsl(var(--primary))] hover:file:bg-[hsl(var(--primary)/0.08)] file:transition-colors bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl cursor-pointer"
                   required
                 />
               </div>
@@ -303,10 +303,10 @@ function ListItem() {
 
           {/* Image Preview */}
           <div className="lg:col-span-2 animate-fade-in delay-200">
-            <p className="text-sm text-gray-400 mb-3 flex items-center gap-2">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3 flex items-center gap-2">
               <ImageIcon size={14} /> Image Preview
             </p>
-            <div className="aspect-square rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
+            <div className="aspect-square rounded-2xl overflow-hidden bg-[hsl(var(--card))] border border-[hsl(var(--border))] flex items-center justify-center">
               {file ? (
                 <img
                   src={URL.createObjectURL(file)}
@@ -314,7 +314,7 @@ function ListItem() {
                   className="w-full h-full object-cover animate-fade-in"
                 />
               ) : (
-                <div className="text-center text-gray-600">
+                <div className="text-center text-[hsl(var(--muted-foreground))]">
                   <ImageIcon size={40} className="mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Select an image file<br/>to preview</p>
                 </div>
@@ -322,11 +322,11 @@ function ListItem() {
             </div>
 
             {/* Tips */}
-            <div className="mt-4 bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-4 text-sm text-indigo-300 space-y-1.5">
-              <p className="font-semibold text-indigo-400">Tips for a great listing:</p>
-              <p className="text-gray-400">• Use a clear, well-lit photo</p>
-              <p className="text-gray-400">• Set a competitive price</p>
-              <p className="text-gray-400">• Keep deposit reasonable</p>
+            <div className="mt-4 bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--border))] rounded-xl p-4 text-sm text-[hsl(var(--primary))] space-y-1.5">
+              <p className="font-semibold text-[hsl(var(--primary))]">Tips for a great listing:</p>
+              <p className="text-[hsl(var(--muted-foreground))]">• Use a clear, well-lit photo</p>
+              <p className="text-[hsl(var(--muted-foreground))]">• Set a competitive price</p>
+              <p className="text-[hsl(var(--muted-foreground))]">• Keep deposit reasonable</p>
             </div>
           </div>
         </div>

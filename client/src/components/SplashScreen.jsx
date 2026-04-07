@@ -25,7 +25,7 @@ export default function SplashScreen({ onComplete }) {
       className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-all duration-500 ${
         phase === "exit" ? "opacity-0 scale-105" : "opacity-100 scale-100"
       }`}
-      style={{ background: "#020917" }}
+      style={{ backgroundColor: 'hsl(var(--background))' }}
     >
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none">
@@ -42,7 +42,7 @@ export default function SplashScreen({ onComplete }) {
         }`}
         style={{ transitionDelay: phase === "logo" ? "0ms" : "0ms" }}
       >
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-2xl shadow-indigo-500/40 mb-8 mx-auto splash-logo-pulse">
+        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-2xl shadow-[hsl(var(--primary)/0.15)] mb-8 mx-auto splash-logo-pulse">
           <Sparkles size={36} className="text-white" />
         </div>
       </div>
@@ -58,7 +58,7 @@ export default function SplashScreen({ onComplete }) {
         <h1 className="text-6xl md:text-7xl font-black tracking-tight">
           <span className="text-shimmer">rentKaro</span>
         </h1>
-        <p className="text-slate-500 text-center mt-3 text-sm tracking-widest uppercase font-medium">
+        <p className="text-[hsl(var(--muted-foreground))] text-center mt-3 text-sm tracking-widest uppercase font-medium">
           Rent Smarter. Live Better.
         </p>
       </div>
@@ -68,7 +68,7 @@ export default function SplashScreen({ onComplete }) {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="w-1.5 h-1.5 rounded-full bg-indigo-500"
+            className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--primary)/0.08)]0"
             style={{
               animation: "splashDot 1.2s ease-in-out infinite",
               animationDelay: `${i * 0.15}s`,

@@ -26,7 +26,7 @@ alert("Product added");
 
 return(
 
-<div className="min-h-screen bg-slate-950 text-white p-20">
+<div className="min-h-screen p-20" style={{ backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
 
 <h1 className="text-4xl mb-10">Admin Panel</h1>
 

@@ -61,19 +61,19 @@ function MyRentals() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pt-28 pb-16 px-6">
+    <div className="min-h-screen pt-28 pb-16 px-6" style={{ backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-extrabold mb-1 cinematic-fade-up">
+            <h1 className="text-4xl font-extrabold mb-1 animate-fade-in">
               <CinematicText text="My " stagger={30} delay={100} />
               <span className="gradient-text">
                 <CinematicText text="Rentals" stagger={30} delay={200} />
               </span>
             </h1>
-            <p className="text-gray-400 text-sm animate-fade-in delay-200">
+            <p className="text-[hsl(var(--muted-foreground))] text-sm animate-fade-in delay-200">
               {rentals.length} active rental{rentals.length !== 1 ? "s" : ""}
             </p>
           </div>
@@ -82,7 +82,7 @@ function MyRentals() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-slate-900 rounded-2xl border border-slate-800 p-6 space-y-4">
+              <div key={i} className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 space-y-4">
                 <div className="skeleton h-5 w-2/3 rounded" />
                 <div className="skeleton h-4 w-1/3 rounded" />
                 <div className="skeleton h-4 w-1/2 rounded" />
@@ -92,9 +92,9 @@ function MyRentals() {
           </div>
         ) : rentals.length === 0 ? (
           <div className="text-center py-24 animate-fade-in">
-            <ShoppingBag size={64} className="text-slate-700 mx-auto mb-5" />
-            <h3 className="text-2xl font-semibold text-gray-400 mb-2">No active rentals</h3>
-            <p className="text-gray-600 mb-8">Browse available items and start renting today.</p>
+            <ShoppingBag size={64} className="text-[hsl(var(--secondary-foreground))] mx-auto mb-5" />
+            <h3 className="text-2xl font-semibold text-[hsl(var(--muted-foreground))] mb-2">No active rentals</h3>
+            <p className="text-[hsl(var(--muted-foreground))] mb-8">Browse available items and start renting today.</p>
             <button
               onClick={() => navigate("/browse")}
               className="btn-primary flex items-center gap-2 mx-auto"
@@ -108,7 +108,7 @@ function MyRentals() {
             {rentals.map((item) => (
               <div
                 key={item._id}
-                className="bg-slate-900/80 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between hover:border-indigo-500/20 transition-all duration-500 cinematic-fade-up"
+                className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 flex flex-col justify-between hover:border-[hsl(var(--border))] transition-all duration-500 animate-fade-in"
               >
                 {/* Card Top */}
                 <div>
@@ -137,13 +137,13 @@ function MyRentals() {
                   <h2 className="text-xl font-bold mb-4 line-clamp-2">{item.productName}</h2>
 
                   {/* Specs */}
-                  <div className="bg-slate-800 rounded-xl p-4 space-y-2.5 mb-5">
+                  <div className="bg-[hsl(var(--muted))] rounded-xl p-4 space-y-2.5 mb-5">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Rent ({item.duration || 1} {item.duration === 1 ? 'mo' : 'mos'})</span>
-                      <span className="font-semibold text-indigo-400">₹{item.price}/mo</span>
+                      <span className="text-[hsl(var(--muted-foreground))]">Rent ({item.duration || 1} {item.duration === 1 ? 'mo' : 'mos'})</span>
+                      <span className="font-semibold text-[hsl(var(--primary))]">₹{item.price}/mo</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Deposit Paid</span>
+                      <span className="text-[hsl(var(--muted-foreground))]">Deposit Paid</span>
                       <span className="font-semibold">₹{item.deposit}</span>
                     </div>
                   </div>
@@ -166,7 +166,7 @@ function MyRentals() {
                       <button
                         onClick={() => handleReturn(item._id)}
                         disabled={returningId === item._id}
-                        className="flex-1 py-2 text-sm bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold transition flex items-center justify-center gap-1.5 disabled:opacity-60 text-white"
+                        className="flex-1 py-2 text-sm bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold transition flex items-center justify-center gap-1.5 disabled:opacity-60 "
                       >
                         {returningId === item._id ? (
                           <Loader2 size={14} className="animate-spin" />
@@ -181,14 +181,15 @@ function MyRentals() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setConfirmId(item._id)}
-                      className="flex-1 py-2.5 text-sm rounded-xl bg-slate-800 hover:bg-amber-600/20 hover:text-amber-400 border border-slate-700 hover:border-amber-500/30 text-gray-400 transition-all duration-200 font-medium flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 text-sm rounded-xl bg-[hsl(var(--muted))] hover:bg-amber-600/20 hover:text-amber-400 border border-[hsl(var(--border))] hover:border-amber-500/30 text-[hsl(var(--muted-foreground))] transition-all duration-200 font-medium flex items-center justify-center gap-2"
                     >
                       Return
                     </button>
                     {item.status === "confirmed" && (
                       <button
                         onClick={() => setChatRental(item)}
-                        className="flex-1 py-2.5 text-sm rounded-xl bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-white transition-all duration-200 font-medium flex items-center justify-center gap-2"
+                        className="flex-1 py-2.5 text-sm rounded-xl text-white transition-all duration-200 font-medium flex items-center justify-center gap-2"
+                        style={{ backgroundColor: 'hsl(var(--primary))' }}
                       >
                         <MessageCircle size={14} /> Message
                       </button>

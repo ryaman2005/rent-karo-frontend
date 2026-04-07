@@ -2,7 +2,7 @@ function SectionHeader({ eyebrow, title, description, centered = false }) {
   return (
     <div className={`max-w-4xl ${centered ? "mx-auto text-center" : ""}`}>
       {eyebrow && (
-        <p className="text-indigo-400 text-xs font-bold tracking-widest uppercase mb-3">
+        <p className="text-[hsl(var(--primary))] text-xs font-bold tracking-widest uppercase mb-3">
           {eyebrow}
         </p>
       )}
@@ -10,7 +10,7 @@ function SectionHeader({ eyebrow, title, description, centered = false }) {
         {title}
       </h2>
       {description && (
-        <p className="text-slate-400 max-w-xl leading-relaxed text-base">
+        <p className="text-[hsl(var(--muted-foreground))] max-w-xl leading-relaxed text-base">
           {description}
         </p>
       )}

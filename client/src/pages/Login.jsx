@@ -81,7 +81,7 @@ function RoleCard({ role, icon, title, desc, active, onClick }) {
       }}
     >
       {active && (
-        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center">
+        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center">
           <CheckCircle2 size={12} className="text-white" />
         </span>
       )}
@@ -94,8 +94,8 @@ function RoleCard({ role, icon, title, desc, active, onClick }) {
       >
         {icon}
       </div>
-      <p className={`font-bold text-sm mb-1 ${active ? "text-indigo-300" : "text-slate-300"}`}>{title}</p>
-      <p className="text-slate-500 text-xs leading-relaxed">{desc}</p>
+      <p className={`font-bold text-sm mb-1 ${active ? "text-[hsl(var(--primary))]" : "text-[hsl(var(--muted-foreground))]"}`}>{title}</p>
+      <p className="text-[hsl(var(--muted-foreground))] text-xs leading-relaxed">{desc}</p>
 
     </button>
   );
@@ -212,61 +212,55 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex text-white" style={{ background: "#020917" }}>
+    <div className="min-h-screen flex" style={{ color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))' }}>
 
       {/* ── Left Branding Panel ── */}
       <div
         className="hidden lg:flex flex-col justify-between w-5/12 p-14 relative overflow-hidden"
         style={{
-          background: "linear-gradient(145deg, #0a0f1e, #080d1a)",
-          borderRight: "1px solid rgba(99,102,241,0.1)",
+          background: 'hsl(var(--primary))',
         }}
       >
-        {/* Orbs */}
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-indigo-600/8 blur-[80px] animate-orb1 pointer-events-none" />
-        <div className="absolute top-10 right-0 w-60 h-60 rounded-full bg-purple-600/8 blur-[60px] animate-orb2 pointer-events-none" />
-        <ParticleField count={40} color="99,102,241" speed={0.15} />
+        {/* Decorative orbs */}
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-white/10 blur-[80px] pointer-events-none" />
+        <div className="absolute top-10 right-0 w-60 h-60 rounded-full bg-white/8 blur-[60px] pointer-events-none" />
 
         {/* Logo */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
             <Sparkles size={16} className="text-white" />
           </div>
-          <span className="text-2xl font-extrabold gradient-text">rentKaro</span>
+          <span className="text-2xl font-extrabold text-white">rentKaro</span>
         </div>
 
         {/* Tagline */}
-        <div className="animate-float">
-          <h2 className="text-5xl font-black mb-5 leading-tight">
-            <CinematicText text="The smarter" stagger={35} delay={300} />
-            <br />way to{" "}
-            <span className="text-shimmer">rent.</span>
+        <div>
+          <h2 className="text-5xl font-black mb-5 leading-tight text-white font-display">
+            The smarter<br />way to{" "}
+            <span className="text-white/80">rent.</span>
           </h2>
-          <p className="text-slate-400 leading-relaxed max-w-xs">
+          <p className="text-white/75 leading-relaxed max-w-xs">
             Join thousands of renters and owners who live smarter with rentKaro.
           </p>
 
           {/* Feature list */}
           <div className="mt-8 space-y-4">
-            {[ 
-            { icon: <Zap size={16} className="text-indigo-400" />, text: "Instant booking, no paperwork" },
-            { icon: <Lock size={16} className="text-indigo-400" />, text: "100% refundable deposits" },
-            { icon: <Users2 size={16} className="text-indigo-400" />, text: "Verified renters and owners" },
-          ].map((f) => (
-            <div key={f.text} className="flex items-center gap-3">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}
-              >
-                {f.icon}
+            {[
+              { icon: <Zap size={16} className="text-white" />, text: "Instant booking, no paperwork" },
+              { icon: <Lock size={16} className="text-white" />, text: "100% refundable deposits" },
+              { icon: <Users2 size={16} className="text-white" />, text: "Verified renters and owners" },
+            ].map((f) => (
+              <div key={f.text} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-white/15">
+                  {f.icon}
+                </div>
+                <span className="text-white/80 text-sm">{f.text}</span>
               </div>
-              <span className="text-slate-400 text-sm">{f.text}</span>
-            </div>
-          ))}
+            ))}
           </div>
         </div>
 
-        <p className="text-slate-700 text-xs">© 2026 rentKaro. All rights reserved.</p>
+        <p className="text-white/50 text-xs">© 2026 rentKaro. All rights reserved.</p>
       </div>
 
       {/* ── Right Auth Panel ── */}
@@ -275,16 +269,16 @@ function Login() {
 
           {/* Mobile logo */}
           <div className="lg:hidden mb-8 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--primary))' }}>
               <Sparkles size={14} className="text-white" />
             </div>
-            <span className="text-2xl font-extrabold gradient-text">rentKaro</span>
+            <span className="text-2xl font-extrabold" style={{ color: 'hsl(var(--foreground))' }}>rentKaro</span>
           </div>
 
           {/* Mode Toggle */}
           <div
-            className="flex rounded-2xl p-1 mb-8"
-            style={{ background: "rgba(10,15,30,0.8)", border: "1px solid rgba(30,41,59,0.8)" }}
+            className="flex rounded-2xl p-1 mb-8 border"
+            style={{ backgroundColor: 'hsl(var(--muted))', borderColor: 'hsl(var(--border))' }}
           >
             {["login", "signup"].map((m) => (
               <button
@@ -294,11 +288,11 @@ function Login() {
                 style={
                   mode === m
                     ? {
-                        background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-                        boxShadow: "0 4px 14px rgba(99,102,241,0.4)",
-                        color: "#fff",
+                        backgroundColor: 'hsl(var(--primary))',
+                        boxShadow: '0 4px 14px hsl(var(--primary) / 0.35)',
+                        color: '#fff',
                       }
-                    : { color: "#64748b" }
+                    : { color: 'hsl(var(--muted-foreground))' }
                 }
               >
                 {m === "login" ? <LogIn size={15} /> : <UserPlus size={15} />}
@@ -312,7 +306,7 @@ function Login() {
             <h1 className="text-3xl font-black mb-1">
               {mode === "login" ? "Welcome back" : "Create account"}
             </h1>
-            <p className="text-slate-400 text-sm">
+            <p className="text-[hsl(var(--muted-foreground))] text-sm">
               {mode === "login"
                 ? "Sign in to access your rentals and listings."
                 : "Join rentKaro — choose how you want to participate."}
@@ -322,11 +316,11 @@ function Login() {
           {/* ── Role Picker (signup only) ── */}
           {mode === "signup" && (
             <div className="mb-6">
-              <p className="text-sm text-slate-400 mb-3 font-medium">I want to...</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3 font-medium">I want to...</p>
               <div className="flex gap-3">
                 <RoleCard
                   role="renter"
-                  icon={<ShoppingBag size={26} className="text-indigo-400" />}
+                  icon={<ShoppingBag size={26} className="text-[hsl(var(--primary))]" />}
                   title="Rent items"
                   desc="Browse and rent items from owners near you."
                   active={role === "renter"}
@@ -353,16 +347,16 @@ function Login() {
 
           {/* Divider */}
           <div className="flex items-center gap-4 my-5">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-slate-600 text-xs font-medium">or continue with email</span>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-[hsl(var(--muted))]" />
+            <span className="text-[hsl(var(--muted-foreground))] text-xs font-medium">or continue with email</span>
+            <div className="flex-1 h-px bg-[hsl(var(--muted))]" />
           </div>
 
           {/* ── Form ── */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <div>
-                <label className="text-xs text-slate-400 mb-1.5 block font-medium">Full Name</label>
+                <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Full Name</label>
                 <input
                   name="name"
                   type="text"
@@ -376,7 +370,7 @@ function Login() {
             )}
 
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block font-medium">Email</label>
+              <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Email</label>
               <input
                 name="email"
                 type="email"
@@ -389,7 +383,7 @@ function Login() {
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block font-medium">Password</label>
+              <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Password</label>
               <div className="relative">
                 <input
                   name="password"
@@ -403,7 +397,7 @@ function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--muted-foreground))] transition"
                 >
                   {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
@@ -412,7 +406,7 @@ function Login() {
 
             {mode === "signup" && (
               <div>
-                <label className="text-xs text-slate-400 mb-1.5 block font-medium">Confirm Password</label>
+                <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Confirm Password</label>
                 <input
                   name="confirmPassword"
                   type={showPw ? "text" : "password"}
@@ -443,16 +437,16 @@ function Login() {
           </form>
 
           {/* Footer link */}
-          <p className="text-center text-slate-500 text-sm mt-6">
+          <p className="text-center text-[hsl(var(--muted-foreground))] text-sm mt-6">
             {mode === "login" ? (
               <>Don't have an account?{" "}
-                <button onClick={() => switchMode("signup")} className="text-indigo-400 hover:text-indigo-300 font-semibold transition">
+                <button onClick={() => switchMode("signup")} className="text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))] font-semibold transition">
                   Sign Up
                 </button>
               </>
             ) : (
               <>Already have an account?{" "}
-                <button onClick={() => switchMode("login")} className="text-indigo-400 hover:text-indigo-300 font-semibold transition">
+                <button onClick={() => switchMode("login")} className="text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))] font-semibold transition">
                   Sign In
                 </button>
               </>

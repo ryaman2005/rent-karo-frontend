@@ -33,9 +33,6 @@ function App() {
 
   return (
     <>
-      {/* Cinematic overlays */}
-      <div className="film-grain" />
-      <div className="cinematic-vignette" />
       <ScrollProgress />
 
       <Navbar />

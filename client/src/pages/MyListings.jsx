@@ -40,19 +40,19 @@ function MyListings() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pt-28 pb-16 px-6">
+    <div className="min-h-screen pt-28 pb-16 px-6" style={{ backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-extrabold mb-1 cinematic-fade-up">
+            <h1 className="text-4xl font-extrabold mb-1 animate-fade-in">
               <CinematicText text="My " stagger={30} delay={100} />
               <span className="gradient-text">
                 <CinematicText text="Listings" stagger={30} delay={200} />
               </span>
             </h1>
-            <p className="text-gray-400 text-sm animate-fade-in delay-200">
+            <p className="text-[hsl(var(--muted-foreground))] text-sm animate-fade-in delay-200">
               {products.length} item{products.length !== 1 ? "s" : ""} listed
             </p>
           </div>
@@ -68,7 +68,7 @@ function MyListings() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800">
+              <div key={i} className="bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))]">
                 <div className="skeleton h-52 w-full" />
                 <div className="p-5 space-y-3">
                   <div className="skeleton h-5 w-2/3 rounded" />
@@ -80,9 +80,9 @@ function MyListings() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-24 animate-fade-in">
-            <Package size={64} className="text-slate-700 mx-auto mb-5" />
-            <h3 className="text-2xl font-semibold text-gray-400 mb-2">No listings yet</h3>
-            <p className="text-gray-600 mb-8">Start earning by listing your first item.</p>
+            <Package size={64} className="text-[hsl(var(--secondary-foreground))] mx-auto mb-5" />
+            <h3 className="text-2xl font-semibold text-[hsl(var(--muted-foreground))] mb-2">No listings yet</h3>
+            <p className="text-[hsl(var(--muted-foreground))] mb-8">Start earning by listing your first item.</p>
             <button
               onClick={() => navigate("/list-item")}
               className="btn-primary flex items-center gap-2 mx-auto"
@@ -96,7 +96,7 @@ function MyListings() {
             {products.map((product) => (
               <Card3D key={product._id} intensity={5}>
               <div
-                className="bg-slate-900/80 rounded-2xl overflow-hidden border border-slate-800 hover:border-indigo-500/20 transition-all duration-500 group cinematic-fade-up"
+                className="bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:border-[hsl(var(--border))] transition-all duration-500 group animate-fade-in"
               >
                 <div className="relative overflow-hidden h-52">
                   <img
@@ -104,9 +104,9 @@ function MyListings() {
                     alt={product.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                   {product.category && (
-                    <span className="absolute top-3 left-3 text-xs font-semibold bg-indigo-600/80 backdrop-blur-sm text-white px-2.5 py-1 rounded-full">
+                    <span className="absolute top-3 left-3 text-xs font-semibold bg-[hsl(var(--primary))]/80 backdrop-blur-sm  px-2.5 py-1 rounded-full">
                       {product.category}
                     </span>
                   )}
@@ -114,11 +114,11 @@ function MyListings() {
 
                 <div className="p-5">
                   <h2 className="text-lg font-bold mb-1">{product.name}</h2>
-                  <p className="text-indigo-400 font-semibold">
+                  <p className="text-[hsl(var(--primary))] font-semibold">
                     ₹{product.price}
-                    <span className="text-gray-500 text-xs font-normal">/mo</span>
+                    <span className="text-[hsl(var(--muted-foreground))] text-xs font-normal">/mo</span>
                   </p>
-                  <p className="text-gray-600 text-sm">₹{product.deposit} deposit</p>
+                  <p className="text-[hsl(var(--muted-foreground))] text-sm">₹{product.deposit} deposit</p>
 
                   {/* Delete inline confirm */}
                   {confirmId === product._id ? (
@@ -151,7 +151,7 @@ function MyListings() {
                   ) : (
                     <button
                       onClick={() => setConfirmId(product._id)}
-                      className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 text-sm rounded-xl bg-slate-800 hover:bg-red-600/20 hover:text-red-400 border border-slate-700 hover:border-red-500/30 text-gray-400 transition-all duration-200"
+                      className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 text-sm rounded-xl bg-[hsl(var(--muted))] hover:bg-red-600/20 hover:text-red-400 border border-[hsl(var(--border))] hover:border-red-500/30 text-[hsl(var(--muted-foreground))] transition-all duration-200"
                     >
                       <Trash2 size={14} />
                       Delete Listing

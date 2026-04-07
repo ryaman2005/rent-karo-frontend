@@ -50,14 +50,14 @@ function RequestCard({ req, onAction }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
-            <Package size={16} className="text-indigo-400" />
+          <div className="w-9 h-9 rounded-xl bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--border))] flex items-center justify-center flex-shrink-0">
+            <Package size={16} className="text-[hsl(var(--primary))]" />
           </div>
           <div>
             <p className="font-bold text-sm text-white leading-tight">{req.productName}</p>
             <div className="flex items-center gap-1 mt-0.5">
-              <User size={11} className="text-slate-500" />
-              <p className="text-slate-500 text-xs">{req.renter?.name}</p>
+              <User size={11} className="text-[hsl(var(--muted-foreground))]" />
+              <p className="text-[hsl(var(--muted-foreground))] text-xs">{req.renter?.name}</p>
             </div>
           </div>
         </div>
@@ -67,19 +67,19 @@ function RequestCard({ req, onAction }) {
       {/* Details */}
       <div className="grid grid-cols-3 gap-2 mb-4">
         <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
-          <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-indigo-400" /></div>
-          <p className="text-indigo-400 font-bold text-sm">₹{req.price}</p>
-          <p className="text-slate-600 text-[10px]">/ month</p>
+          <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-[hsl(var(--primary))]" /></div>
+          <p className="text-[hsl(var(--primary))] font-bold text-sm">₹{req.price}</p>
+          <p className="text-[hsl(var(--muted-foreground))] text-[10px]">/ month</p>
         </div>
         <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
           <div className="flex justify-center mb-1"><Calendar size={12} className="text-violet-400" /></div>
           <p className="text-violet-400 font-bold text-sm">{req.duration}mo</p>
-          <p className="text-slate-600 text-[10px]">duration</p>
+          <p className="text-[hsl(var(--muted-foreground))] text-[10px]">duration</p>
         </div>
         <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
           <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-sky-400" /></div>
           <p className="text-sky-400 font-bold text-sm">₹{req.deposit}</p>
-          <p className="text-slate-600 text-[10px]">deposit</p>
+          <p className="text-[hsl(var(--muted-foreground))] text-[10px]">deposit</p>
         </div>
       </div>
 
@@ -130,17 +130,17 @@ function NotificationPanel({ requests, onAction, onClose }) {
       }}
     >
       {/* Header */}
-      <div className="px-5 py-4 flex items-center justify-between border-b border-slate-800/60 flex-shrink-0">
+      <div className="px-5 py-4 flex items-center justify-between border-b border-[hsl(var(--border))]/60 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <Bell size={15} className="text-indigo-400" />
+          <Bell size={15} className="text-[hsl(var(--primary))]" />
           <span className="text-white font-bold text-sm">Rental Requests</span>
           {requests.length > 0 && (
-            <span className="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full font-semibold">
+            <span className="text-xs bg-[hsl(var(--primary))] text-white px-2 py-0.5 rounded-full font-semibold">
               {requests.length}
             </span>
           )}
         </div>
-        <button onClick={onClose} className="text-slate-500 hover:text-white transition p-1 rounded-lg hover:bg-slate-800">
+        <button onClick={onClose} className="text-[hsl(var(--muted-foreground))] hover:text-white transition p-1 rounded-lg hover:bg-[hsl(var(--muted))]">
           <X size={15} />
         </button>
       </div>
@@ -151,10 +151,10 @@ function NotificationPanel({ requests, onAction, onClose }) {
           <div className="text-center py-10">
             <div className="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center"
               style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(30,41,59,0.8)" }}>
-              <Bell size={20} className="text-slate-600" />
+              <Bell size={20} className="text-[hsl(var(--muted-foreground))]" />
             </div>
-            <p className="text-slate-400 text-sm font-medium">No pending requests</p>
-            <p className="text-slate-600 text-xs mt-1">New rental requests will appear here.</p>
+            <p className="text-[hsl(var(--muted-foreground))] text-sm font-medium">No pending requests</p>
+            <p className="text-[hsl(var(--muted-foreground))] text-xs mt-1">New rental requests will appear here.</p>
           </div>
         ) : (
           requests.map((req) => (
