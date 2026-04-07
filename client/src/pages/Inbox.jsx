@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { MessageSquare, Loader2, ArrowUpRight } from "lucide-react";
 import ChatModal from "../components/ChatModal";
 import { useNavigate } from "react-router-dom";
@@ -15,10 +15,7 @@ function Inbox() {
   useEffect(() => {
     const fetchInbox = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/rentals/inbox", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/api/rentals/inbox");
         setConversations(res.data);
       } catch (err) {
         console.error("Failed to load inbox", err);

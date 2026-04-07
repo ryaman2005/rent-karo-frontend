@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import {
   Package, Tag, IndianRupee, Shield, Image as ImageIcon,
@@ -94,10 +95,9 @@ function ListItem() {
       }
 
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/api/products", formData, {
+      await api.post("/api/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
         }
       });
       setSuccess(true);

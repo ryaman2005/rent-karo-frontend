@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { ArrowLeft, Tag, IndianRupee, Shield, CheckCircle2, X, Loader2, Calendar, MapPin, User } from "lucide-react";
 
 function SkeletonDetail() {
@@ -119,8 +119,8 @@ function ProductDetails() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/products/${id}`)
+    api
+      .get(`/api/products/${id}`)
       .then((res) => setProduct(res.data))
       .catch((err) => console.log(err));
   }, [id]);
@@ -130,17 +130,15 @@ function ProductDetails() {
   const handleRent = async (duration) => {
     setRenting(true);
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:8000/api/rentals",
+      await api.post(
+        "/api/rentals",
         { 
           productId: product._id,
           productName: product.name, 
           price: product.price, 
           deposit: product.deposit,
           duration 
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
       setShowModal(false);
       setSuccess(true);

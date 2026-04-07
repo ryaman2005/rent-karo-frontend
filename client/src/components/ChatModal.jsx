@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { X, Send, Loader2 } from "lucide-react";
 import { getSocket } from "../services/socketService";
 
@@ -24,10 +24,7 @@ export default function ChatModal({ rental, onClose }) {
     // 1. Fetch initial messages
     const fetchMessages = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:8000/api/chat/${rental._id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get(`/api/chat/${rental._id}`);
         setMessages(res.data);
       } catch (err) {
         console.error("Failed to load messages", err);
@@ -64,11 +61,7 @@ export default function ChatModal({ rental, onClose }) {
     setSending(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:8000/api/chat",
-        { rentalId: rental._id, text: text.trim(), receiverId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.post("/api/chat", { rentalId: rental._id, text: text.trim(), receiverId });
       
       const savedMessage = res.data;
       // We don't manually add to state because we will receive it via socket 'receive_message' soon.

@@ -1,10 +1,11 @@
 import { io } from "socket.io-client";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    socket = io("http://localhost:8000", {
+    socket = io(API_BASE_URL, {
       autoConnect: false,
       transports: ["websocket"],
     });

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { ShoppingBag, ArrowUpRight, CheckCircle2, AlertCircle, Loader2, Clock, XCircle, PackageCheck, MessageCircle } from "lucide-react";
 import { getSocket } from "../services/socketService";
@@ -16,10 +16,7 @@ function MyRentals() {
   useEffect(() => {
     const fetchRentals = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/rentals", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/api/rentals");
         setRentals(res.data);
       } catch (err) {
         console.log("Error fetching rentals", err);
@@ -45,10 +42,7 @@ function MyRentals() {
   const handleReturn = async (id) => {
     setReturningId(id);
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8000/api/rentals/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/api/rentals/${id}`);
       setRentals((prev) => prev.filter((item) => item._id !== id));
       setConfirmId(null);
     } catch (err) {
