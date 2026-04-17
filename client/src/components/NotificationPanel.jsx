@@ -44,8 +44,7 @@ function RequestCard({ req, onAction }) {
 
   return (
     <div
-      className="rounded-2xl p-4 border transition-all duration-300"
-      style={{ background: "rgba(10,15,30,0.9)", border: "1px solid rgba(99,102,241,0.15)" }}
+      className="rounded-2xl p-4 border transition-all duration-300 bg-[hsl(var(--card))] border-[hsl(var(--border))] group hover:border-[hsl(var(--primary)/0.3)] shadow-sm hover:shadow-md"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
@@ -54,7 +53,7 @@ function RequestCard({ req, onAction }) {
             <Package size={16} className="text-[hsl(var(--primary))]" />
           </div>
           <div>
-            <p className="font-bold text-sm text-white leading-tight">{req.productName}</p>
+            <p className="font-bold text-sm text-[hsl(var(--foreground))] leading-tight">{req.productName}</p>
             <div className="flex items-center gap-1 mt-0.5">
               <User size={11} className="text-[hsl(var(--muted-foreground))]" />
               <p className="text-[hsl(var(--muted-foreground))] text-xs">{req.renter?.name}</p>
@@ -66,21 +65,21 @@ function RequestCard({ req, onAction }) {
 
       {/* Details */}
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
+        <div className="rounded-xl p-2.5 text-center bg-[hsl(var(--secondary))]">
           <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-[hsl(var(--primary))]" /></div>
           <p className="text-[hsl(var(--primary))] font-bold text-sm">₹{req.price}</p>
           <p className="text-[hsl(var(--muted-foreground))] text-[10px]">/ month</p>
         </div>
-        <div className="rounded-xl p-2.5 text-center flex flex-col justify-center" style={{ background: "rgba(15,23,42,0.8)" }}>
-          <div className="flex justify-center mb-1"><Calendar size={12} className="text-violet-400" /></div>
-          <p className="text-violet-400 font-bold text-[10px] leading-tight">
+        <div className="rounded-xl p-2.5 text-center flex flex-col justify-center bg-[hsl(var(--secondary))]">
+          <div className="flex justify-center mb-1"><Calendar size={12} className="text-violet-500" /></div>
+          <p className="text-violet-600 font-bold text-[10px] leading-tight">
             {new Date(req.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} <br/>
             {new Date(req.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
           </p>
         </div>
-        <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
-          <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-sky-400" /></div>
-          <p className="text-sky-400 font-bold text-sm">₹{req.deposit}</p>
+        <div className="rounded-xl p-2.5 text-center bg-[hsl(var(--secondary))]">
+          <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-sky-500" /></div>
+          <p className="text-sky-600 font-bold text-sm">₹{req.deposit}</p>
           <p className="text-[hsl(var(--muted-foreground))] text-[10px]">deposit</p>
         </div>
       </div>
@@ -122,27 +121,23 @@ function RequestCard({ req, onAction }) {
 function NotificationPanel({ requests, onAction, onClose }) {
   return (
     <div
-      className="animate-slide-down absolute right-0 top-full mt-2 w-96 rounded-2xl z-50 flex flex-col overflow-hidden"
+      className="animate-slide-down absolute right-0 top-full mt-2 w-96 rounded-2xl z-50 flex flex-col overflow-hidden bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-lg"
       style={{
-        background: "rgba(6,10,20,0.97)",
-        border: "1px solid rgba(99,102,241,0.2)",
-        boxShadow: "0 24px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.1)",
-        backdropFilter: "blur(20px)",
         maxHeight: "520px",
       }}
     >
       {/* Header */}
-      <div className="px-5 py-4 flex items-center justify-between border-b border-[hsl(var(--border))]/60 flex-shrink-0">
+      <div className="px-5 py-4 flex items-center justify-between border-b border-[hsl(var(--border))] flex-shrink-0">
         <div className="flex items-center gap-2">
           <Bell size={15} className="text-[hsl(var(--primary))]" />
-          <span className="text-white font-bold text-sm">Rental Requests</span>
+          <span className="text-[hsl(var(--foreground))] font-bold text-sm">Rental Requests</span>
           {requests.length > 0 && (
             <span className="text-xs bg-[hsl(var(--primary))] text-white px-2 py-0.5 rounded-full font-semibold">
               {requests.length}
             </span>
           )}
         </div>
-        <button onClick={onClose} className="text-[hsl(var(--muted-foreground))] hover:text-white transition p-1 rounded-lg hover:bg-[hsl(var(--muted))]">
+        <button onClick={onClose} className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition p-1 rounded-lg hover:bg-[hsl(var(--muted))]">
           <X size={15} />
         </button>
       </div>
@@ -151,8 +146,7 @@ function NotificationPanel({ requests, onAction, onClose }) {
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {requests.length === 0 ? (
           <div className="text-center py-10">
-            <div className="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-              style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(30,41,59,0.8)" }}>
+            <div className="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-[hsl(var(--secondary))] border border-[hsl(var(--border))]">
               <Bell size={20} className="text-[hsl(var(--muted-foreground))]" />
             </div>
             <p className="text-[hsl(var(--muted-foreground))] text-sm font-medium">No pending requests</p>

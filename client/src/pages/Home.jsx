@@ -324,16 +324,16 @@ function Home() {
                 className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                   activeCategory === cat
                     ? "text-white scale-105"
-                    : "text-[hsl(var(--muted-foreground))] hover:text-white border border-[hsl(var(--border))]/60 hover:border-slate-600"
+                    : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]"
                 }`}
                 style={
                   activeCategory === cat
                     ? {
                         backgroundColor: 'hsl(var(--primary))',
                         boxShadow: '0 4px 14px hsl(var(--primary) / 0.35)',
-                        border: "1px solid rgba(99,102,241,0.5)",
+                        border: "1px solid hsl(var(--primary))",
                       }
-                    : { background: "rgba(15,23,42,0.6)" }
+                    : { backgroundColor: "hsl(var(--secondary))" }
                 }
               >
                 {cat}

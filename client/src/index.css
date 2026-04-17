@@ -68,7 +68,7 @@
   ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.3); }
 }
 
-@layer utilities {
+@layer components {
   /* ── Glass / Navbar ── */
   .glass {
     background: hsl(var(--background) / 0.92);
@@ -143,9 +143,14 @@
     box-shadow: var(--shadow-md);
   }
 
+  /* ── Font display class ── */
+  .font-display {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
   /* ── Input fields ── */
   .input-field {
-    @apply w-full p-3 rounded-xl transition-all duration-200;
+    @apply w-full py-3 px-4 rounded-xl transition-all duration-200;
     background-color: hsl(var(--background));
     border: 1px solid hsl(var(--input));
     color: hsl(var(--foreground));
@@ -157,10 +162,15 @@
     border-color: hsl(var(--primary) / 0.5);
     box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
   }
+}
 
-  /* ── Font display class ── */
-  .font-display {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+@layer utilities {
+  /* ── Gradient text using primary coral ── */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(0 80% 70%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
