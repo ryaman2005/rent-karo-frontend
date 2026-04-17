@@ -29,6 +29,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    phone: {
+      type: String,
+      default: null,
+    },
+    termsAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    idVerificationStatus: {
+      type: String,
+      enum: ["unverified", "pending", "approved", "rejected"],
+      default: "unverified",
+    },
+    idDocumentUrl: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

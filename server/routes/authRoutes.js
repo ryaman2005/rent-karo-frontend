@@ -1,14 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Otp = require("../models/Otp");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { sendOtpEmail } = require("../services/mailService");
+const protect = require("../middleware/authMiddleware");
+const kycUpload = require("../middleware/kycUploadMiddleware");
 
 // ─── Helper: sign token ───────────────────────────────
 const signToken = (userId) =>
   jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-// ─── Register Route ───────────────────────────────────
+// ─── Register Route (Send OTP) ───────────────────────
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -22,15 +26,66 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "An account with this email already exists" });
     }
 
+    // Generate a 6-digit pure number OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Remove any existing OTP for this email
+    await Otp.deleteMany({ email });
+
+    // Save newly generated OTP
+    await Otp.create({ email, otp: otpCode });
+
+    // Send the email
+    await sendOtpEmail({ toEmail: email, otp: otpCode });
+
+    res.status(200).json({
+      message: "An OTP has been sent to your email.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+// ─── Verify OTP & Create Account ───────────────────────
+router.post("/verify-otp", async (req, res) => {
+  try {
+    const { name, email, password, role, otp, phone, termsAccepted } = req.body;
+
+    if (!name || !email || !password || !otp || !phone) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    
+    if (termsAccepted !== true) {
+      return res.status(400).json({ message: "You must accept the terms and conditions." });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Account already exists" });
+    }
+
+    // Verify OTP
+    const validOtp = await Otp.findOne({ email, otp });
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Hash Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create User
     const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
       role: role || "renter",
+      phone,
+      termsAccepted: true,
     });
+
+    // Delete OTP
+    await Otp.deleteMany({ email });
 
     const token = signToken(newUser._id);
 
@@ -135,6 +190,99 @@ router.post("/google", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+});
+
+// ─── POST /api/auth/kyc — Renter uploads their ID document ───
+router.post("/kyc", protect, kycUpload.single("idDocument"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Please upload an ID document." });
+    }
+
+    const user = await User.findById(req.user);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    if (user.idVerificationStatus === "approved") {
+      return res.status(400).json({ message: "Your ID is already verified." });
+    }
+
+    user.idDocumentUrl = req.file.path;
+    user.idVerificationStatus = "pending";
+    await user.save();
+
+    // ── Emit Socket Event to Owners ──
+    const io = req.app.get("io");
+    const userSockets = req.app.get("userSockets");
+
+    if (io && userSockets) {
+      // Find all owners to notify them
+      const owners = await User.find({ role: "owner" }).select("_id");
+      owners.forEach((owner) => {
+        const socketId = userSockets.get(owner._id.toString());
+        if (socketId) {
+          io.to(socketId).emit("new_kyc_submission", {
+            userId: user._id,
+            userName: user.name,
+            status: "pending",
+          });
+        }
+      });
+    }
+
+    res.status(200).json({
+      message: "ID document submitted successfully. Awaiting admin review.",
+      idVerificationStatus: user.idVerificationStatus,
+    });
+  } catch (error) {
+    console.error("[KYC] Upload error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// ─── GET /api/auth/kyc/pending — Admin fetches all pending KYC requests ───
+router.get("/kyc/pending", protect, async (req, res) => {
+  try {
+    const admin = await User.findById(req.user);
+    if (!admin || admin.role !== "owner") {
+      return res.status(403).json({ message: "Admin access only." });
+    }
+
+    const pendingUsers = await User.find({ idVerificationStatus: "pending" })
+      .select("name email phone idDocumentUrl idVerificationStatus createdAt")
+      .sort({ createdAt: -1 });
+
+    res.json(pendingUsers);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// ─── PATCH /api/auth/kyc/:id — Admin approves or rejects KYC ───
+router.patch("/kyc/:id", protect, async (req, res) => {
+  try {
+    const admin = await User.findById(req.user);
+    if (!admin || admin.role !== "owner") {
+      return res.status(403).json({ message: "Admin access only." });
+    }
+
+    const { status } = req.body; // "approved" | "rejected"
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status." });
+    }
+
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) return res.status(404).json({ message: "User not found." });
+
+    targetUser.idVerificationStatus = status;
+    await targetUser.save();
+
+    res.json({
+      message: `KYC ${status} for ${targetUser.name}.`,
+      user: { _id: targetUser._id, name: targetUser.name, idVerificationStatus: status },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 

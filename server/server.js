@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const rentalRoutes = require("./routes/rentalRoutes");
 const productRoutes = require("./routes/productRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 const protect = require("./middleware/authMiddleware");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -85,6 +86,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/rentals", rentalRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Protected profile route
 app.get("/api/profile", protect, (req, res) => {

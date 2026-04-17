@@ -71,10 +71,12 @@ function RequestCard({ req, onAction }) {
           <p className="text-[hsl(var(--primary))] font-bold text-sm">₹{req.price}</p>
           <p className="text-[hsl(var(--muted-foreground))] text-[10px]">/ month</p>
         </div>
-        <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
+        <div className="rounded-xl p-2.5 text-center flex flex-col justify-center" style={{ background: "rgba(15,23,42,0.8)" }}>
           <div className="flex justify-center mb-1"><Calendar size={12} className="text-violet-400" /></div>
-          <p className="text-violet-400 font-bold text-sm">{req.duration}mo</p>
-          <p className="text-[hsl(var(--muted-foreground))] text-[10px]">duration</p>
+          <p className="text-violet-400 font-bold text-[10px] leading-tight">
+            {new Date(req.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} <br/>
+            {new Date(req.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+          </p>
         </div>
         <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(15,23,42,0.8)" }}>
           <div className="flex justify-center mb-1"><IndianRupee size={12} className="text-sky-400" /></div>

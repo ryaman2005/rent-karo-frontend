@@ -5,7 +5,7 @@ const messageSchema = new mongoose.Schema(
     rentalId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Rental",
-      required: true,
+      required: false,
     },
     sender: {
       type: mongoose.Schema.Types.ObjectId,

@@ -29,11 +29,13 @@ const rentalSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    duration: {
-      type: Number,
-      default: 1, // months
-      min: 1,
-      max: 24,
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
     },
     status: {
       type: String,

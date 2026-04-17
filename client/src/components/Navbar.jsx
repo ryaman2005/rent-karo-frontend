@@ -24,6 +24,7 @@ function Navbar() {
   // Notifications state
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [kycCount, setKycCount] = useState(0);
   const panelRef = useRef(null);
 
   // Re-sync user and connect socket
@@ -34,14 +35,30 @@ function Navbar() {
       if (u) {
         connectSocket(u._id);
         fetchNotifications();
+        if (u.role === "owner") {
+          fetchKycCount();
+        }
       } else {
         disconnectSocket();
         setNotifications([]);
+        setKycCount(0);
       }
     } catch {
       setUser(null);
     }
   }, [location.pathname]);
+
+  const fetchKycCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_URL}/api/auth/kyc/pending`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setKycCount(res.data.length);
+    } catch (err) {
+      console.error("Failed to fetch kyc count", err);
+    }
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -56,7 +73,8 @@ function Navbar() {
         productName: r.productName,
         price: r.price,
         deposit: r.deposit,
-        duration: r.duration,
+        startDate: r.startDate,
+        endDate: r.endDate,
         renter: r.user,
         createdAt: r.createdAt
       }));
@@ -74,8 +92,17 @@ function Navbar() {
       setNotifications(prev => [data, ...prev]);
     };
 
+    const handleNewKyc = () => {
+      setKycCount(prev => prev + 1);
+    };
+
     socket.on("new_rental_request", handleNewRequest);
-    return () => socket.off("new_rental_request", handleNewRequest);
+    socket.on("new_kyc_submission", handleNewKyc);
+
+    return () => {
+      socket.off("new_rental_request", handleNewRequest);
+      socket.off("new_kyc_submission", handleNewKyc);
+    };
   }, []);
 
   // Click outside notification panel
@@ -114,6 +141,7 @@ function Navbar() {
     { path: "/list-item", label: "List an Item", icon: <Package size={14} /> },
     { path: "/my-listings", label: "My Listings", icon: <List size={14} /> },
     { path: "/inbox", label: "Inbox", icon: <MessageSquare size={14} /> },
+    ...(user?.role === "owner" ? [{ path: "/admin", label: "Admin", icon: <Sparkles size={14} /> }] : []),
   ];
 
   return (
@@ -156,6 +184,11 @@ function Navbar() {
             >
               {link.icon}
               {link.label}
+              {link.path === "/admin" && kycCount > 0 && (
+                <span className="ml-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
+                  {kycCount}
+                </span>
+              )}
             </Link>
           ))}
         </div>

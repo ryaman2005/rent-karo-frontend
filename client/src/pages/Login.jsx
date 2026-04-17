@@ -67,34 +67,27 @@ function RoleCard({ role, icon, title, desc, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="relative flex-1 rounded-2xl p-5 text-left transition-all duration-300 active:scale-95"
-      style={{
-        background: active
-          ? "linear-gradient(135deg, rgba(79,70,229,0.18), rgba(124,58,237,0.12))"
-          : "rgba(10,15,30,0.6)",
-        border: active
-          ? "1.5px solid rgba(99,102,241,0.55)"
-          : "1.5px solid rgba(30,41,59,0.9)",
-        boxShadow: active
-          ? "0 0 20px rgba(99,102,241,0.15), inset 0 0 20px rgba(99,102,241,0.04)"
-          : "none",
-      }}
+      className={`relative flex-1 rounded-2xl p-5 text-left transition-all duration-300 active:scale-95 border-[1.5px] ${
+        active 
+          ? "border-[hsl(var(--primary)_/_0.55)] bg-[hsl(var(--primary)_/_0.08)] shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
+          : "border-[hsl(var(--border))] bg-[hsl(var(--card))] hover:border-[hsl(var(--primary)_/_0.3)] shadow-sm"
+      }`}
     >
       {active && (
-        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center">
+        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center shadow-md">
           <CheckCircle2 size={12} className="text-white" />
         </span>
       )}
       <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-        style={{
-          background: active ? "rgba(99,102,241,0.15)" : "rgba(15,23,42,0.8)",
-          border: active ? "1px solid rgba(99,102,241,0.3)" : "1px solid rgba(30,41,59,0.8)",
-        }}
+        className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 border ${
+          active 
+            ? "border-[hsl(var(--primary)_/_0.3)] bg-[hsl(var(--primary)_/_0.15)]" 
+            : "border-[hsl(var(--border))] bg-[hsl(var(--muted))]"
+        }`}
       >
         {icon}
       </div>
-      <p className={`font-bold text-sm mb-1 ${active ? "text-[hsl(var(--primary))]" : "text-[hsl(var(--muted-foreground))]"}`}>{title}</p>
+      <p className={`font-bold text-sm mb-1 ${active ? "text-[hsl(var(--primary))]" : "text-[hsl(var(--foreground))]"}`}>{title}</p>
       <p className="text-[hsl(var(--muted-foreground))] text-xs leading-relaxed">{desc}</p>
 
     </button>
@@ -125,15 +118,20 @@ function Login() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: "", type: "error" });
+  const [signupStep, setSignupStep] = useState(1); // 1 = Core, 2 = OTP, 3 = Terms
+  const [otp, setOtp] = useState("");
 
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "", phone: "", termsAccepted: false });
 
   const showToast = (msg, type = "error") => {
     setToast({ message: msg, type });
     setTimeout(() => setToast({ message: "", type: "error" }), 4000);
   };
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
+  };
 
   const saveAndRedirect = (data) => {
     localStorage.setItem("token", data.token);
@@ -163,7 +161,8 @@ function Login() {
         const res = await axios.post(`${API_URL}/api/auth/register`, {
           name: form.name, email: form.email, password: form.password, role,
         });
-        saveAndRedirect(res.data);
+        showToast(res.data.message, "success");
+        setSignupStep(2);
       } else {
         const res = await axios.post(`${API_URL}/api/auth/login`, {
           email: form.email, password: form.password,
@@ -172,6 +171,43 @@ function Login() {
       }
     } catch (err) {
       showToast(err?.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ── Advance OTP ── */
+  const handleOtpNext = (e) => {
+    e.preventDefault();
+    if (!otp || otp.length < 6) return showToast("Please enter the 6-digit OTP");
+    setSignupStep(3);
+  };
+
+  /* ── Terms Verification ── */
+  const handleTermsSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.phone) return showToast("Please enter your phone number");
+    if (!form.termsAccepted) return showToast("Please accept the Terms & Conditions");
+
+    setLoading(true);
+    setToast({ message: "", type: "error" });
+
+    try {
+      const res = await axios.post(`${API_URL}/api/auth/verify-otp`, {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role,
+        otp,
+        phone: form.phone,
+        termsAccepted: form.termsAccepted,
+      });
+      saveAndRedirect(res.data);
+    } catch (err) {
+      showToast(err?.response?.data?.message || "Invalid OTP or validation failed. Please try again.");
+      if (err?.response?.data?.message?.toLowerCase().includes("otp")) {
+        setSignupStep(2); // Rewind to OTP if it was the OTP that failed
+      }
     } finally {
       setLoading(false);
     }
@@ -208,7 +244,9 @@ function Login() {
   const switchMode = (m) => {
     setMode(m);
     setToast({ message: "", type: "error" });
-    setForm({ name: "", email: "", password: "", confirmPassword: "" });
+    setForm({ name: "", email: "", password: "", confirmPassword: "", phone: "", termsAccepted: false });
+    setSignupStep(1);
+    setOtp("");
   };
 
   return (
@@ -339,24 +377,88 @@ function Login() {
           )}
 
           {/* ── Google Sign In ── */}
-          <GoogleButton
-            onSuccess={handleGoogleSuccess}
-            onError={(msg) => showToast(msg)}
-            label={mode === "login" ? "Sign in with Google" : "Sign up with Google"}
-          />
+          {(mode === "login" || signupStep === 1) && (
+            <GoogleButton
+              onSuccess={handleGoogleSuccess}
+              onError={(msg) => showToast(msg)}
+              label={mode === "login" ? "Sign in with Google" : "Sign up with Google"}
+            />
+          )}
 
           {/* Divider */}
-          <div className="flex items-center gap-4 my-5">
-            <div className="flex-1 h-px bg-[hsl(var(--muted))]" />
-            <span className="text-[hsl(var(--muted-foreground))] text-xs font-medium">or continue with email</span>
-            <div className="flex-1 h-px bg-[hsl(var(--muted))]" />
-          </div>
+          {(mode === "login" || signupStep === 1) && (
+            <div className="flex items-center gap-4 my-5">
+              <div className="flex-1 h-px bg-[hsl(var(--muted))]" />
+              <span className="text-[hsl(var(--muted-foreground))] text-xs font-medium">or continue with email</span>
+              <div className="flex-1 h-px bg-[hsl(var(--muted))]" />
+            </div>
+          )}
 
           {/* ── Form ── */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <div>
-                <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Full Name</label>
+          <form 
+            onSubmit={
+              mode === "login" || signupStep === 1 
+                ? handleSubmit 
+                : signupStep === 2 ? handleOtpNext : handleTermsSubmit
+            } 
+            className="space-y-4"
+          >
+            {mode === "signup" && signupStep === 3 ? (
+              <div className="animate-fade-in space-y-4">
+                <div>
+                  <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Phone Number</label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    value={form.phone}
+                    onChange={handleChange}
+                    className="input-field"
+                    required
+                  />
+                </div>
+                
+                <div className="flex items-start gap-3 mt-4 p-4 rounded-xl bg-[hsl(var(--muted))] border border-[hsl(var(--border))]">
+                  <div className="mt-1">
+                    <input
+                      name="termsAccepted"
+                      type="checkbox"
+                      id="terms"
+                      checked={form.termsAccepted}
+                      onChange={handleChange}
+                      className="w-4 h-4 rounded text-[hsl(var(--primary))] border-gray-300 focus:ring-[hsl(var(--primary))]"
+                      required
+                    />
+                  </div>
+                  <label htmlFor="terms" className="text-sm text-[hsl(var(--muted-foreground))] leading-relaxed cursor-pointer">
+                    I agree to the <span className="text-[hsl(var(--primary))] font-semibold hover:underline">Terms of Service</span> and <span className="text-[hsl(var(--primary))] font-semibold hover:underline">Privacy Policy</span>. I understand I am legally responsible for the items I rent or list.
+                  </label>
+                </div>
+              </div>
+            ) : mode === "signup" && signupStep === 2 ? (
+              <div className="animate-fade-in space-y-4">
+                <div className="p-4 rounded-xl bg-[hsl(var(--muted))] border border-[hsl(var(--border))] text-sm text-center mb-4">
+                  <span className="text-[hsl(var(--muted-foreground))]">We sent a verification code to</span><br/>
+                  <strong className="text-[hsl(var(--foreground))]">{form.email}</strong>
+                </div>
+                <div>
+                  <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium text-center">Enter 6-digit OTP</label>
+                  <input
+                    type="text"
+                    maxLength="6"
+                    placeholder="••••••"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    className="input-field text-center text-2xl tracking-[0.5em] font-mono h-14"
+                    required
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                {mode === "signup" && signupStep === 1 && (
+                  <div>
+                    <label className="text-xs text-[hsl(var(--muted-foreground))] mb-1.5 block font-medium">Full Name</label>
                 <input
                   name="name"
                   type="text"
@@ -418,6 +520,8 @@ function Login() {
                 />
               </div>
             )}
+            </>
+            )}
 
             <Toast message={toast.message} type={toast.type} />
 
@@ -427,18 +531,37 @@ function Login() {
               className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed mt-1"
             >
               {loading ? (
-                <><Loader2 size={16} className="animate-spin" /> {mode === "login" ? "Signing in..." : "Creating account..."}</>
+                <><Loader2 size={16} className="animate-spin" /> {
+                  mode === "login" ? "Signing in..." : 
+                  signupStep === 1 ? "Sending OTP..." : "Creating account..."
+                }</>
               ) : mode === "login" ? (
                 <><LogIn size={16} /> Sign In</>
+              ) : signupStep === 1 ? (
+                <><UserPlus size={16} /> Send OTP</>
+              ) : signupStep === 2 ? (
+                <>Next <Zap size={16}/></>
               ) : (
-                <><UserPlus size={16} /> Create Account</>
+                <><CheckCircle2 size={16} /> Complete Account</>
               )}
             </button>
           </form>
 
           {/* Footer link */}
-          <p className="text-center text-[hsl(var(--muted-foreground))] text-sm mt-6">
-            {mode === "login" ? (
+          {mode === "signup" && signupStep > 1 ? (
+            <p className="text-center text-[hsl(var(--muted-foreground))] text-sm mt-6">
+              Need to make a change?{" "}
+              <button 
+                type="button" 
+                onClick={() => setSignupStep(signupStep - 1)} 
+                className="text-[hsl(var(--primary))] hover:underline font-semibold transition"
+              >
+                Go back
+              </button>
+            </p>
+          ) : (
+            <p className="text-center text-[hsl(var(--muted-foreground))] text-sm mt-6">
+              {mode === "login" ? (
               <>Don't have an account?{" "}
                 <button onClick={() => switchMode("signup")} className="text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))] font-semibold transition">
                   Sign Up
@@ -451,7 +574,8 @@ function Login() {
                 </button>
               </>
             )}
-          </p>
+            </p>
+          )}
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ router.get("/:rentalId", protect, async (req, res) => {
     const { rentalId } = req.params;
 
     // Verify the user is either the renter or the owner of this rental
-    const rental = await Rental.findById(rentalId).populate("product");
+    const rental = await Rental.findById(rentalId);
     if (!rental) return res.status(404).json({ message: "Rental not found" });
 
     const isRenter = rental.user?.toString() === req.user.toString();
@@ -24,11 +24,34 @@ router.get("/:rentalId", protect, async (req, res) => {
     const messages = await Message.find({ rentalId })
       .populate("sender", "name avatar")
       .populate("receiver", "name avatar")
-      .sort({ createdAt: 1 }); // Oldest to newest
+      .sort({ createdAt: 1 });
 
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: "Error fetching messages", error: error.message });
+  }
+});
+
+// ── GET /api/chat/direct/:otherUserId — Fetch direct (Support) messages ──
+router.get("/direct/:otherUserId", protect, async (req, res) => {
+  try {
+    const { otherUserId } = req.params;
+
+    // Find messages between these two users that HAVE NO rentalId
+    const messages = await Message.find({
+      rentalId: null,
+      $or: [
+        { sender: req.user, receiver: otherUserId },
+        { sender: otherUserId, receiver: req.user }
+      ]
+    })
+      .populate("sender", "name avatar")
+      .populate("receiver", "name avatar")
+      .sort({ createdAt: 1 });
+
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching DM", error: error.message });
   }
 });
 
@@ -38,23 +61,25 @@ router.post("/", protect, async (req, res) => {
   try {
     const { rentalId, text, receiverId } = req.body;
 
-    if (!rentalId || !text || !receiverId) {
-      return res.status(400).json({ message: "rentalId, text, and receiverId are required" });
+    if (!text || !receiverId) {
+      return res.status(400).json({ message: "text and receiverId are required" });
     }
 
-    // Security verify
-    const rental = await Rental.findById(rentalId);
-    if (!rental) return res.status(404).json({ message: "Rental not found" });
+    // If it's a rental chat, verify authorization
+    if (rentalId) {
+      const rental = await Rental.findById(rentalId);
+      if (!rental) return res.status(404).json({ message: "Rental not found" });
 
-    const isRenter = rental.user?.toString() === req.user.toString();
-    const isOwner = rental.owner?.toString() === req.user.toString();
+      const isRenter = rental.user?.toString() === req.user.toString();
+      const isOwner = rental.owner?.toString() === req.user.toString();
 
-    if (!isRenter && !isOwner) {
-      return res.status(403).json({ message: "Not authorized to send messages in this chat" });
+      if (!isRenter && !isOwner) {
+        return res.status(403).json({ message: "Not authorized for this rental chat" });
+      }
     }
 
     const message = await Message.create({
-      rentalId,
+      rentalId: rentalId || null,
       sender: req.user,
       receiver: receiverId,
       text,

@@ -4,7 +4,7 @@ import { X, Send, Loader2 } from "lucide-react";
 import { getSocket } from "../services/socketService";
 import { API_URL } from "../config";
 
-export default function ChatModal({ rental, onClose }) {
+export default function ChatModal({ rental, targetUser, onClose }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -14,19 +14,29 @@ export default function ChatModal({ rental, onClose }) {
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const socket = getSocket();
 
-  // The 'other' user to message depends on if it's populated (Inbox) or a raw string (MyRentals)
-  const ownerId = typeof rental.owner === "object" ? rental.owner?._id : rental.owner;
-  const userId = typeof rental.user === "object" ? rental.user?._id : rental.user;
+  // If it's a rental chat, we derive the 'other' user. 
+  // If it's a direct user chat (Support), we use 'targetUser'.
+  const rentalId = rental?._id || null;
+  const ownerId = rental ? (typeof rental.owner === "object" ? rental.owner?._id : rental.owner) : null;
+  const userId = rental ? (typeof rental.user === "object" ? rental.user?._id : rental.user) : null;
 
   const isOwner = currentUser._id === ownerId;
-  const receiverId = isOwner ? userId : ownerId;
+  const receiverId = rental ? (isOwner ? userId : ownerId) : targetUser?._id;
+
+  // Stable room ID for direct messages: sort IDs to ensure both parties join the same room
+  const directRoomId = !rental ? [currentUser._id, targetUser._id].sort().join("_") : null;
+  const roomId = rentalId || directRoomId;
 
   useEffect(() => {
     // 1. Fetch initial messages
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_URL}/api/chat/${rental._id}`, {
+        const url = rental 
+          ? `${API_URL}/api/chat/${rentalId}`
+          : `${API_URL}/api/chat/direct/${targetUser._id}`;
+        
+        const res = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessages(res.data);
@@ -38,12 +48,22 @@ export default function ChatModal({ rental, onClose }) {
     };
     fetchMessages();
 
-    // 2. Join Socket.io room for this rental
-    socket.emit("join_chat", rental._id);
+    // 2. Join Socket.io room
+    socket.emit("join_chat", roomId);
 
     // 3. Listen for incoming messages
     const handleReceiveMessage = (newMessage) => {
-      setMessages((prev) => [...prev, newMessage]);
+      // Check if message belongs to this view (rental match index OR DM match)
+      if (rental && newMessage.rentalId === rentalId) {
+        setMessages((prev) => [...prev, newMessage]);
+      } else if (!rental && !newMessage.rentalId) {
+        // For DMs, verify sender/receiver match this thread
+        const senderMatch = [newMessage.sender._id, newMessage.sender].includes(currentUser._id) || [newMessage.sender._id, newMessage.sender].includes(targetUser._id);
+        const receiverMatch = [newMessage.receiver._id, newMessage.receiver].includes(currentUser._id) || [newMessage.receiver._id, newMessage.receiver].includes(targetUser._id);
+        if (senderMatch && receiverMatch) {
+          setMessages((prev) => [...prev, newMessage]);
+        }
+      }
     };
 
     socket.on("receive_message", handleReceiveMessage);
@@ -51,7 +71,7 @@ export default function ChatModal({ rental, onClose }) {
     return () => {
       socket.off("receive_message", handleReceiveMessage);
     };
-  }, [rental._id, socket]);
+  }, [roomId, socket, rentalId, targetUser?._id]);
 
   // Scroll to bottom when messages update
   useEffect(() => {
@@ -67,14 +87,13 @@ export default function ChatModal({ rental, onClose }) {
       const token = localStorage.getItem("token");
       const res = await axios.post(
         `${API_URL}/api/chat`,
-        { rentalId: rental._id, text: text.trim(), receiverId },
+        { rentalId, text: text.trim(), receiverId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
       const savedMessage = res.data;
-      // We don't manually add to state because we will receive it via socket 'receive_message' soon.
-      // Wait, we DO want to emit it via socket!
-      socket.emit("send_message", savedMessage);
+      // Emit with the correct roomId so the other party receives it
+      socket.emit("send_message", { ...savedMessage, rentalId: roomId });
       
       setText("");
     } catch (err) {
@@ -92,42 +111,52 @@ export default function ChatModal({ rental, onClose }) {
         {/* Header */}
         <div className="p-4 border-b border-[hsl(var(--border))] flex items-center justify-between bg-[hsl(var(--card))]">
           <div>
-            <h3 className="text-lg font-bold text-white">
-              Chat about <span className="text-[hsl(var(--primary))]">{rental.productName}</span>
+            <h3 className="text-lg font-bold" style={{ color: 'hsl(var(--foreground))' }}>
+              {rental ? (
+                <span className="text-[hsl(var(--primary))]">{rental.productName}</span>
+              ) : (
+                <span>Support Thread: <span className="text-[hsl(var(--primary))]">{targetUser.name}</span></span>
+              )}
             </h3>
-            <p className="text-xs text-gray-400">
-              {isOwner ? "Chatting with Renter" : "Chatting with Owner"}
+            <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>
+              {rental 
+                ? (isOwner ? "Chatting with Renter" : "Chatting with Owner")
+                : "Administrative Direct Message"
+              }
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition">
+          <button onClick={onClose} className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition rounded-xl p-1 hover:bg-[hsl(var(--muted))]">
             <X size={20} />
           </button>
         </div>
 
         {/* Messages Box */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-950/50">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ backgroundColor: 'hsl(var(--muted))' }}>
           {loading ? (
             <div className="flex justify-center items-center h-full">
               <Loader2 className="animate-spin text-[hsl(var(--primary))]" size={32} />
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500 space-y-2">
-              <p>No messages yet.</p>
+            <div className="flex flex-col items-center justify-center h-full space-y-2" style={{ color: 'hsl(var(--muted-foreground))' }}>
+              <p className="font-medium">No messages yet.</p>
               <p className="text-sm">Say hi to coordinate your rental!</p>
             </div>
           ) : (
             messages.map((msg, i) => {
-              const isMe = msg.sender._id === currentUser._id;
+              // Handle both populated ({_id, name}) and unpopulated (string) sender
+              const senderId = typeof msg.sender === "object" ? msg.sender._id : msg.sender;
+              const senderName = typeof msg.sender === "object" ? msg.sender.name : "";
+              const isMe = senderId === currentUser._id;
               return (
                 <div key={msg._id || i} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                  <span className="text-[10px] text-gray-500 mb-1 px-1">
-                    {msg.sender.name} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <span className="text-[10px] mb-1 px-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
+                    {senderName} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   <div className={`px-4 py-2.5 rounded-2xl max-w-[80%] text-sm ${
                     isMe 
                     ? "bg-[hsl(var(--primary))] text-white rounded-tr-sm" 
-                    : "bg-[hsl(var(--muted))] text-gray-200 border border-[hsl(var(--border))] rounded-tl-sm"
-                  }`}>
+                    : "bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-tl-sm"
+                  }`} style={isMe ? {} : { color: 'hsl(var(--foreground))' }}>
                     {msg.text}
                   </div>
                 </div>

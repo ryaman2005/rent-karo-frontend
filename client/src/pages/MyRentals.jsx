@@ -6,6 +6,7 @@ import { ShoppingBag, ArrowUpRight, CheckCircle2, AlertCircle, Loader2, Clock, X
 import CinematicText from "../components/CinematicText";
 import { getSocket } from "../services/socketService";
 import ChatModal from "../components/ChatModal";
+import ReviewModal from "../components/ReviewModal";
 
 function MyRentals() {
   const [rentals, setRentals] = useState([]);
@@ -13,6 +14,7 @@ function MyRentals() {
   const [returningId, setReturningId] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
   const [chatRental, setChatRental] = useState(null);
+  const [reviewItem, setReviewItem] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,11 +50,19 @@ function MyRentals() {
     setReturningId(id);
     try {
       const token = localStorage.getItem("token");
+      const itemToReview = rentals.find(r => r._id === id);
+      
       await axios.delete(`${API_URL}/api/rentals/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setRentals((prev) => prev.filter((item) => item._id !== id));
       setConfirmId(null);
+      
+      // Trigger review modal for the returned item
+      if (itemToReview) {
+        setReviewItem(itemToReview);
+      }
     } catch (err) {
       console.log("Return failed", err);
     } finally {
@@ -138,8 +148,10 @@ function MyRentals() {
 
                   {/* Specs */}
                   <div className="bg-[hsl(var(--muted))] rounded-xl p-4 space-y-2.5 mb-5">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-[hsl(var(--muted-foreground))]">Rent ({item.duration || 1} {item.duration === 1 ? 'mo' : 'mos'})</span>
+                    <div className="flex justify-between text-sm items-center">
+                      <span className="text-[hsl(var(--muted-foreground))] text-[11px] font-medium tracking-wide bg-[hsl(var(--card))] px-2 py-1 rounded-md border border-[hsl(var(--border))]">
+                        {new Date(item.startDate).toLocaleDateString()} → {new Date(item.endDate).toLocaleDateString()}
+                      </span>
                       <span className="font-semibold text-[hsl(var(--primary))]">₹{item.price}/mo</span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -204,6 +216,10 @@ function MyRentals() {
 
       {chatRental && (
         <ChatModal rental={chatRental} onClose={() => setChatRental(null)} />
+      )}
+
+      {reviewItem && (
+        <ReviewModal item={reviewItem} onClose={() => setReviewItem(null)} />
       )}
     </div>
   );

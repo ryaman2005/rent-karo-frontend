@@ -85,4 +85,37 @@ async function sendRentalRejection({ toEmail, renterName, productName }) {
   }
 }
 
-module.exports = { sendRentalConfirmation, sendRentalRejection };
+/**
+ * Send an OTP Email for signup verification.
+ */
+async function sendOtpEmail({ toEmail, otp }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+      <h2 style="color: #4f46e5;">🔐 Verification Code</h2>
+      <p>Hi,</p>
+      <p>Your one-time password (OTP) to complete your signup at <strong>rentKaro</strong> is:</p>
+      <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center;">
+        <h1 style="color: #4f46e5; margin: 0; font-size: 32px; letter-spacing: 4px;">${otp}</h1>
+      </div>
+      <p>This code will expire in <strong>5 minutes</strong>. Do not share it with anyone.</p>
+      <p>If you didn't request this, you can safely ignore this email.</p>
+      <p style="color: #64748b; font-size: 12px; margin-top: 30px;">— Team rentKaro</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `Your Verification Code: ${otp}`,
+      html,
+    });
+    console.log(`[Email] OTP sent to ${toEmail}`);
+  } catch (err) {
+    console.error("[Email] Failed to send OTP:", err.message);
+  }
+}
+
+module.exports = { sendRentalConfirmation, sendRentalRejection, sendOtpEmail };

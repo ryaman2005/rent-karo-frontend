@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../config";
 import { ArrowLeft, Tag, IndianRupee, Shield, CheckCircle2, X, Loader2, Calendar, MapPin, User } from "lucide-react";
+import KycModal from "../components/KycModal";
+import ReviewSection from "../components/ReviewSection";
 
 function SkeletonDetail() {
   return (
@@ -25,9 +27,30 @@ function SkeletonDetail() {
 }
 
 function ConfirmModal({ product, onConfirm, onCancel, loading }) {
-  const [duration, setDuration] = useState(1);
+  const getTodayString = () => new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState(getTodayString());
+  
+  // Set default end date to tomorrow
+  const getTomorrowString = () => {
+    const tmrw = new Date();
+    tmrw.setDate(tmrw.getDate() + 1);
+    return tmrw.toISOString().split("T")[0];
+  };
+  const [endDate, setEndDate] = useState(getTomorrowString());
+
   const mPrice = parseInt(product.price || 0);
   const dep = parseInt(product.deposit || 0);
+
+  const calculateDays = (start, end) => {
+    if (!start || !end) return 0;
+    const s = new Date(start);
+    const e = new Date(end);
+    if (s >= e) return 0;
+    return Math.max(0, Math.ceil((e.getTime() - s.getTime()) / (1000 * 3600 * 24)));
+  };
+
+  const days = calculateDays(startDate, endDate);
+  const totalRent = Math.round((mPrice / 30) * days);
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center px-4 animate-fade-in">
@@ -47,33 +70,39 @@ function ConfirmModal({ product, onConfirm, onCancel, loading }) {
         </p>
 
         {/* Duration Picker */}
-        <div className="mb-6">
-          <label className="flex items-center gap-2 text-sm font-medium text-[hsl(var(--muted-foreground))] mb-2">
-            <Calendar size={14} className="text-[hsl(var(--primary))]" /> Rental Duration
-          </label>
-          <div className="relative">
-            <select
-              value={duration}
-              onChange={(e) => setDuration(parseInt(e.target.value))}
-              className="w-full rounded-xl px-4 py-3 appearance-none focus:outline-none transition-colors"
-              style={{ backgroundColor: 'hsl(var(--secondary))', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
-            >
-              {[...Array(12)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1} Month{i > 0 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[hsl(var(--muted-foreground))]">
-              <span className="text-[hsl(var(--muted-foreground))]">▼</span>
-            </div>
+        <div className="mb-6 grid grid-cols-2 gap-4">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-[hsl(var(--muted-foreground))] mb-2">
+              <Calendar size={14} className="text-[hsl(var(--primary))]" /> Start Date
+            </label>
+            <input
+              type="date"
+              min={getTodayString()}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors border"
+              style={{ backgroundColor: 'hsl(var(--secondary))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
+            />
+          </div>
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-[hsl(var(--muted-foreground))] mb-2">
+              End Date
+            </label>
+            <input
+              type="date"
+              min={startDate}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors border"
+              style={{ backgroundColor: 'hsl(var(--secondary))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
+            />
           </div>
         </div>
 
         <div className="bg-[hsl(var(--muted))] rounded-xl p-4 mb-6 space-y-3 border border-[hsl(var(--border))]/50">
           <div className="flex justify-between text-sm">
-            <span className="text-[hsl(var(--muted-foreground))]">Monthly Rent</span>
-            <span className="font-semibold text-[hsl(var(--primary))]">₹{mPrice}/mo</span>
+            <span className="text-[hsl(var(--muted-foreground))]">Est. Rent ({days} days)</span>
+            <span className="font-semibold text-[hsl(var(--primary))]">₹{totalRent}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-[hsl(var(--muted-foreground))]">Security Deposit</span>
@@ -82,10 +111,9 @@ function ConfirmModal({ product, onConfirm, onCancel, loading }) {
           <div className="border-t border-[hsl(var(--border))] pt-3 flex justify-between text-sm items-end">
             <div>
               <span className="block mb-0.5" style={{ color: 'hsl(var(--muted-foreground))' }}>Total Due Today</span>
-              <span className="text-[10px] text-[hsl(var(--muted-foreground))]">(Rent × {duration}) + Deposit</span>
             </div>
             <span className="font-bold text-lg" style={{ color: 'hsl(var(--foreground))' }}>
-              ₹{(mPrice * duration) + dep}
+              ₹{totalRent + dep}
             </span>
           </div>
         </div>
@@ -99,8 +127,8 @@ function ConfirmModal({ product, onConfirm, onCancel, loading }) {
             Cancel
           </button>
           <button
-            onClick={() => onConfirm(duration)}
-            disabled={loading}
+            onClick={() => onConfirm(startDate, endDate)}
+            disabled={loading || days === 0}
             className="btn-primary flex-1 py-3 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {loading ? (
@@ -122,6 +150,8 @@ function ProductDetails() {
   const [showModal, setShowModal] = useState(false);
   const [renting, setRenting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showKycModal, setShowKycModal] = useState(false);
 
   useEffect(() => {
     axios
@@ -132,8 +162,9 @@ function ProductDetails() {
 
   if (!product) return <SkeletonDetail />;
 
-  const handleRent = async (duration) => {
+  const handleRent = async (startDate, endDate) => {
     setRenting(true);
+    setErrorMsg("");
     try {
       const token = localStorage.getItem("token");
       await axios.post(
@@ -143,7 +174,8 @@ function ProductDetails() {
           productName: product.name, 
           price: product.price, 
           deposit: product.deposit,
-          duration 
+          startDate,
+          endDate 
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -152,6 +184,12 @@ function ProductDetails() {
       setTimeout(() => setSuccess(false), 4000);
     } catch (err) {
       console.log(err);
+      if (err?.response?.data?.message === "KYC_REQUIRED") {
+        setShowModal(false);
+        setShowKycModal(true);
+      } else {
+        setErrorMsg(err?.response?.data?.message || "Failed to submit request.");
+      }
     } finally {
       setRenting(false);
     }
@@ -159,6 +197,13 @@ function ProductDetails() {
 
   return (
     <>
+      {showKycModal && (
+        <KycModal
+          onClose={() => setShowKycModal(false)}
+          onSuccess={() => setShowKycModal(false)}
+        />
+      )}
+
       {showModal && (
         <ConfirmModal
           product={product}
@@ -181,12 +226,22 @@ function ProductDetails() {
             Back
           </button>
 
-          {/* Success Toast */}
+          {/* Toast and Error Handling */}
+          {errorMsg && (
+            <div className="mb-6 flex items-center gap-3 bg-red-500/10 border border-red-500/30 text-red-500 px-5 py-4 rounded-xl animate-fade-in">
+              <X size={20} />
+              <div>
+                <p className="font-semibold">Request Failed</p>
+                <p className="text-sm opacity-80">{errorMsg}</p>
+              </div>
+            </div>
+          )}
+
           {success && (
             <div className="mb-6 flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-5 py-4 rounded-xl animate-fade-in">
               <CheckCircle2 size={20} />
               <div>
-                <p className="font-semibold">Rental Confirmed!</p>
+                <p className="font-semibold">Rental Requested!</p>
                 <p className="text-sm text-emerald-500/80">You can view it in My Rentals.</p>
               </div>
             </div>
@@ -279,6 +334,9 @@ function ProductDetails() {
               </button>
             </div>
           </div>
+
+          {/* Review Section */}
+          <ReviewSection productId={product._id} targetUserId={product.owner?._id} />
         </div>
       </div>
     </>

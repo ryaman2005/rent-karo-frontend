@@ -35,7 +35,7 @@ function App() {
     <>
       <ScrollProgress />
 
-      <Navbar />
+      {location.pathname !== "/login" && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Home /></PageTransition>} />
