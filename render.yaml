@@ -1,3 +1,4 @@
+version: 1
 services:
   # ─── API SERVER (Node.js) ───────────────────────────────────────────
   - type: web
@@ -30,10 +31,10 @@ services:
   # ─── FRONTEND (Static Site) ─────────────────────────────────────────
   - type: web
     name: rentkaro-frontend
-    runtime: static
+    env: static
     rootDir: client
     buildCommand: npm install && npm run build
     publishPath: dist
     envVars:
       - key: VITE_API_URL
-        sync: false # Point this to your Render backend URL once deployed
+        sync: false
