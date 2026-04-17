@@ -18,13 +18,21 @@ const FRONTEND_URL = (process.env.FRONTEND_URL || "http://localhost:5173").trim(
 const app = express();
 const server = http.createServer(app);
 
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || origin === FRONTEND_URL || origin.endsWith(".vercel.app") || origin.startsWith("http://localhost")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  credentials: true,
+};
+
 // ── Socket.io setup ──────────────────────────────────
 const io = new Server(server, {
-  cors: {
-    origin: FRONTEND_URL,
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    credentials: true,
-  },
+  cors: corsOptions,
 });
 
 // Map userId → socketId for targeted emission
@@ -72,10 +80,8 @@ app.set("userSockets", userSockets);
 // ── CORS ─────────────────────────────────────────────
 app.use(
   cors({
-    origin: FRONTEND_URL,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    ...corsOptions,
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
 
