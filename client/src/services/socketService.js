@@ -8,7 +8,6 @@ export function getSocket() {
     socket = io(API_URL, {
       autoConnect: false,
       withCredentials: true,
-      transports: ["websocket"],
     });
   }
   return socket;
