@@ -202,19 +202,69 @@ function Home() {
           </button>
         </div>
 
-        {/* Stats */}
-        <div className="animate-fade-in delay-600 mt-24 grid grid-cols-2 md:grid-cols-4 gap-5 w-full max-w-3xl">
-          {STATS.map((stat, i) => (
-            <div
-              key={stat.label}
-              className="glass-card rounded-2xl p-5 text-center cursor-default group hover:border-[hsl(var(--border))] transition-colors animate-border-pulse"
-              style={{ animationDelay: `${i * 0.7}s` }}
-            >
-              <div className="flex justify-center mb-2">{stat.icon}</div>
-              <p className="text-3xl font-black text-[hsl(var(--foreground))]">{stat.value}</p>
-              <p className="text-[hsl(var(--muted-foreground))] text-xs mt-1 font-medium">{stat.label}</p>
-            </div>
-          ))}
+        {/* Premium Stats */}
+        <div className="animate-fade-in delay-600 mt-24 grid grid-cols-2 md:grid-cols-4 gap-5 w-full max-w-4xl">
+          {STATS.map((stat, i) => {
+            const getIconColor = (index) => {
+              const colors = ['var(--primary)', '139 65% 60%', '200 95% 45%', '160 65% 45%'];
+              return colors[index] || colors[0];
+            };
+            const iconColor = getIconColor(i);
+            
+            return (
+              <div
+                key={stat.label}
+                className="group relative rounded-3xl p-6 text-center cursor-default transition-all duration-500 hover:-translate-y-2 bg-white"
+                style={{ 
+                  animationDelay: `${i * 0.15}s`,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.03), inset 0 0 0 1px rgba(0,0,0,0.05)',
+                }}
+              >
+                {/* Subtle Hover Glow Background */}
+                <div 
+                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ background: `linear-gradient(180deg, transparent, hsl(${iconColor} / 0.03)` }}
+                />
+
+                {/* Icon Container */}
+                <div 
+                  className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+                  style={{ 
+                    backgroundColor: `hsl(${iconColor} / 0.1)`,
+                    border: `1px solid hsl(${iconColor} / 0.2)`
+                  }}
+                >
+                  <div className="transition-transform duration-500 group-hover:scale-110">
+                    {stat.icon}
+                  </div>
+                </div>
+
+                {/* Typography */}
+                <div className="relative z-10">
+                  <p 
+                    className="text-4xl font-black tracking-tight mb-1 transition-all duration-300"
+                    style={{ 
+                      background: `linear-gradient(135deg, hsl(var(--foreground)), hsl(${iconColor}))`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p className="text-[hsl(var(--muted-foreground))] text-xs font-semibold tracking-wide uppercase transition-colors duration-300">
+                    {stat.label}
+                  </p>
+                </div>
+                
+                {/* Underglow line */}
+                <div 
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-1 rounded-t-full transition-all duration-500 group-hover:w-1/2 opacity-0 group-hover:opacity-100"
+                  style={{ backgroundColor: `hsl(${iconColor})` }}
+                />
+              </div>
+            );
+          })}
         </div>
       </section>
 
