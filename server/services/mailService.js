@@ -118,4 +118,63 @@ async function sendOtpEmail({ toEmail, otp }) {
   }
 }
 
-module.exports = { sendRentalConfirmation, sendRentalRejection, sendOtpEmail };
+/**
+ * Send an Email notification to the renter that their request was placed.
+ */
+async function sendRentalPlaced({ toEmail, renterName, productName }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+      <h2 style="color: #4f46e5;">⏳ Request Submitted</h2>
+      <p>Hi <strong>${renterName}</strong>,</p>
+      <p>Your rental request for <strong>${productName}</strong> has been successfully placed!</p>
+      <p>We are waiting for the owner to confirm your request. You will receive another email once they respond.</p>
+      <p>Thank you for using <strong>rentKaro</strong>.</p>
+      <p style="color: #64748b; font-size: 12px; margin-top: 30px;">— Team rentKaro</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `Rental Request Placed: ${productName}`,
+      html,
+    });
+    console.log(`[Email] Rental placed email sent to renter: ${toEmail}`);
+  } catch (err) {
+    console.error("[Email] Failed to send rental placed email:", err.message);
+  }
+}
+
+/**
+ * Send an Email notification to the owner about a new rental request.
+ */
+async function sendOwnerNewRequest({ toEmail, ownerName, renterName, productName }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+      <h2 style="color: #4f46e5;">🔔 New Rental Request!</h2>
+      <p>Hi <strong>${ownerName || "Owner"}</strong>,</p>
+      <p><strong>${renterName}</strong> just requested to rent your item: <strong>${productName}</strong>.</p>
+      <p>Please log in to your <strong>rentKaro</strong> admin dashboard to review and confirm or reject this request.</p>
+      <p style="color: #64748b; font-size: 12px; margin-top: 30px;">— Team rentKaro</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `New Rental Request for ${productName}`,
+      html,
+    });
+    console.log(`[Email] New request email sent to owner: ${toEmail}`);
+  } catch (err) {
+    console.error("[Email] Failed to send new request email to owner:", err.message);
+  }
+}
+
+module.exports = { sendRentalConfirmation, sendRentalRejection, sendOtpEmail, sendRentalPlaced, sendOwnerNewRequest };

@@ -4,7 +4,7 @@ const Rental = require("../models/Rental");
 const Product = require("../models/Product");
 const User = require("../models/User");
 const protect = require("../middleware/authMiddleware");
-const { sendRentalConfirmation, sendRentalRejection } = require("../services/mailService");
+const { sendRentalConfirmation, sendRentalRejection, sendRentalPlaced, sendOwnerNewRequest } = require("../services/mailService");
 
 // ── POST /api/rentals — Renter creates a rental request ──────────────
 router.post("/", protect, async (req, res) => {
@@ -46,9 +46,13 @@ router.post("/", protect, async (req, res) => {
 
     // Find product to get owner
     let ownerId = null;
+    let ownerUser = null;
     if (productId) {
       const product = await Product.findById(productId);
-      if (product) ownerId = product.owner;
+      if (product) {
+        ownerId = product.owner;
+        ownerUser = await User.findById(ownerId).select("name email");
+      }
     }
 
     const rental = await Rental.create({
@@ -66,8 +70,24 @@ router.post("/", protect, async (req, res) => {
     // Populate renter info for the notification payload
     const renter = await User.findById(req.user).select("name email phone");
 
+    // ── Email notification to renter ──
+    await sendRentalPlaced({
+      toEmail: renter.email,
+      renterName: renter.name,
+      productName,
+    });
+
     // ── Emit real-time notification to the owner ──
     if (ownerId) {
+      // ── Email notification to owner ──
+      if (ownerUser) {
+        await sendOwnerNewRequest({
+          toEmail: ownerUser.email,
+          ownerName: ownerUser.name,
+          renterName: renter.name,
+          productName,
+        });
+      }
       const io = req.app.get("io");
       const userSockets = req.app.get("userSockets");
       const ownerSocketId = userSockets.get(ownerId.toString());
