@@ -226,3 +226,12 @@
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
 }
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--tw-rotate, 0deg)); }
+  50% { transform: translateY(-20px) rotate(calc(var(--tw-rotate, 0deg) + 5deg)); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}

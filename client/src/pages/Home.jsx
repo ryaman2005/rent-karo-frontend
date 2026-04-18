@@ -458,26 +458,70 @@ function Home() {
         </div>
       </section>
 
-      {/* ── BOTTOM CTA ── */}
-      <section className="py-24 px-6" style={{ backgroundColor: 'hsl(var(--primary))' }}>
-        <div data-reveal className="reveal max-w-3xl mx-auto text-center">
-          <div className="w-12 h-12 rounded-2xl mx-auto mb-6 flex items-center justify-center bg-white/20">
-            <Sparkles size={22} className="text-white" />
-          </div>
-          <h2 className="text-4xl md:text-5xl font-black mb-4 text-white font-display">
-            Ready to get started?
-          </h2>
-          <p className="mb-10 max-w-lg mx-auto text-lg leading-relaxed" style={{ color: 'hsl(0 0% 100% / 0.85)' }}>
-            Join thousands of renters and owners on rentKaro. Start renting or earning today.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <button onClick={() => navigate("/browse")} className="bg-white font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2 text-base" style={{ color: 'hsl(var(--primary))' }}>
-              <span>Browse Listings</span>
-              <ArrowRight size={18} />
-            </button>
-            <button onClick={() => navigate("/list-item")} className="bg-transparent border-2 border-white/60 text-white font-semibold px-10 py-4 rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-base">
-              List Your Items
-            </button>
+      {/* ── PREMIUM BOTTOM CTA ── */}
+      <section className="relative py-32 px-6 overflow-hidden">
+        {/* Dynamic Background Gradient */}
+        <div 
+          className="absolute inset-0 z-0" 
+          style={{ 
+            background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(350, 80%, 65%) 100%)' 
+          }} 
+        />
+
+        {/* Decorative Grid Pattern Overlay */}
+        <div 
+          className="absolute inset-0 z-0 opacity-10 mix-blend-overlay"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
+            backgroundSize: "64px 64px",
+          }}
+        />
+
+        {/* Floating Glass Orbs for Depth */}
+        <div className="absolute top-[-10%] left-[-5%] w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[30rem] h-[30rem] bg-rose-400/30 rounded-full blur-3xl pointer-events-none" />
+        
+        {/* Decorative Floating Elements */}
+        <div className="absolute top-20 right-[15%] w-24 h-24 bg-white/5 border border-white/20 rounded-2xl rotate-12 backdrop-blur-md animate-float" style={{ animationDuration: '8s' }} />
+        <div className="absolute bottom-24 left-[15%] w-16 h-16 bg-white/5 border border-white/10 rounded-full -rotate-12 backdrop-blur-md animate-float" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+        <div className="absolute top-1/3 left-[10%] w-8 h-8 rounded-full border-2 border-white/20 animate-pulse" />
+        <div className="absolute top-1/4 right-[20%] w-4 h-4 rounded-full bg-white/40 animate-ping" style={{ animationDuration: '3s' }} />
+
+        {/* Content Container */}
+        <div data-reveal className="reveal relative z-10 max-w-4xl mx-auto">
+          <div className="bg-white/10 border border-white/20 backdrop-blur-xl rounded-[3rem] p-12 md:p-20 text-center shadow-2xl relative overflow-hidden">
+            {/* Subtle inner corner glow */}
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent opacity-50 pointer-events-none" />
+
+            <div className="w-16 h-16 rounded-2xl mx-auto mb-8 flex items-center justify-center bg-white shadow-lg shadow-black/5 transform -rotate-3 transition-transform hover:rotate-0 duration-300">
+              <Sparkles size={28} style={{ color: 'hsl(var(--primary))' }} />
+            </div>
+            
+            <h2 className="text-5xl md:text-6xl font-black mb-6 text-white font-display tracking-tight leading-tight drop-shadow-sm">
+              Ready to get started?
+            </h2>
+            
+            <p className="mb-12 max-w-xl mx-auto text-lg md:text-xl leading-relaxed text-white/90 font-medium tracking-wide">
+              Join thousands of renters and owners on rentKaro. Start renting or earning today.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-5 justify-center">
+              <button 
+                onClick={() => navigate("/browse")} 
+                className="bg-white font-bold px-10 py-4 rounded-xl hover:bg-slate-50 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-base shadow-xl shadow-black/10 group" 
+                style={{ color: 'hsl(var(--primary))' }}
+              >
+                <span>Browse Listings</span>
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button 
+                onClick={() => navigate("/list-item")} 
+                className="bg-white/10 backdrop-blur-md border px-10 py-4 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-base text-white font-bold"
+                style={{ borderColor: 'rgba(255,255,255,0.4)' }}
+              >
+                List Your Items
+              </button>
+            </div>
           </div>
         </div>
       </section>
