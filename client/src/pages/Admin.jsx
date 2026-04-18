@@ -35,6 +35,12 @@ function KycCard({ user, onAction, onMessage }) {
   const [loading, setLoading] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  const getImageUrl = (url) => {
+    if (!url) return "";
+    // Cloudinary can serve a PDF's first page as an image by changing the extension
+    return url.replace(/\.pdf$/i, ".jpg");
+  };
+
   const handle = async (status) => {
     setLoading(status);
     try {
@@ -59,10 +65,21 @@ function KycCard({ user, onAction, onMessage }) {
           onClick={() => setPreviewOpen(false)}
         >
           <img
-            src={user.idDocumentUrl}
-            alt="ID Document"
+            src={getImageUrl(user.idDocumentUrl)}
+            alt="ID Document preview"
             className="max-h-[85vh] max-w-full rounded-2xl shadow-2xl border border-white/10"
           />
+          {user.idDocumentUrl?.toLowerCase().endsWith('.pdf') && (
+            <a 
+              href={user.idDocumentUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="absolute bottom-10 px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full font-medium transition-colors backdrop-blur-md border border-white/20"
+            >
+              Open Original PDF
+            </a>
+          )}
         </div>
       )}
 
@@ -111,7 +128,7 @@ function KycCard({ user, onAction, onMessage }) {
             onClick={() => setPreviewOpen(true)}
           >
             <img
-              src={user.idDocumentUrl}
+              src={getImageUrl(user.idDocumentUrl)}
               alt="ID Document"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
