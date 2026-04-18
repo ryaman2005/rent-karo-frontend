@@ -49,13 +49,12 @@ function KycModal({ onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center px-4 animate-fade-in">
       <div
-        className="bg-white rounded-2xl border p-8 max-w-md w-full shadow-2xl animate-fade-in relative"
-        style={{ borderColor: "hsl(var(--border))" }}
+        className="bg-white rounded-2xl border border-slate-200 p-8 max-w-md w-full shadow-2xl animate-fade-in relative"
       >
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition"
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-900 transition"
         >
           <X size={20} />
         </button>
@@ -66,10 +65,10 @@ function KycModal({ onClose, onSuccess }) {
             <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
               <Clock size={32} className="text-amber-400" />
             </div>
-            <h3 className="text-xl font-bold mb-2" style={{ color: "hsl(var(--foreground))" }}>
+            <h3 className="text-xl font-bold mb-2 text-slate-900">
               ID Submitted!
             </h3>
-            <p className="text-[hsl(var(--muted-foreground))] text-sm mb-6 leading-relaxed">
+            <p className="text-slate-500 text-sm mb-6 leading-relaxed">
               Your document is now under review. You'll be able to rent items once an admin approves your ID — usually within 24 hours.
             </p>
             <button onClick={onClose} className="btn-primary w-full py-3">
@@ -80,22 +79,25 @@ function KycModal({ onClose, onSuccess }) {
           /* ── Upload Form ── */
           <>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-11 h-11 rounded-xl bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--border))] flex items-center justify-center">
-                <ShieldCheck size={22} className="text-[hsl(var(--primary))]" />
+              <div 
+                className="w-11 h-11 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: 'hsl(var(--primary)/0.08)', border: '1px solid hsl(var(--primary)/0.2)' }}
+              >
+                <ShieldCheck size={22} style={{ color: 'hsl(var(--primary))' }} />
               </div>
               <div>
-                <h3 className="text-xl font-bold" style={{ color: "hsl(var(--foreground))" }}>
+                <h3 className="text-xl font-bold text-slate-900">
                   ID Verification Required
                 </h3>
-                <p className="text-[hsl(var(--muted-foreground))] text-xs">
+                <p className="text-slate-500 text-xs">
                   One-time verification to protect our community
                 </p>
               </div>
             </div>
 
-            <div className="bg-amber-500/8 border border-amber-500/20 rounded-xl p-4 mb-6 flex gap-3">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex gap-3">
               <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-[hsl(var(--foreground))] leading-relaxed">
+              <p className="text-sm text-slate-800 leading-relaxed">
                 Upload a government-issued ID (Aadhar Card, PAN Card, Passport, or Driver's License) to unlock renting on rentKaro.
               </p>
             </div>
@@ -103,26 +105,26 @@ function KycModal({ onClose, onSuccess }) {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* File Drop Zone */}
               <div>
-                <label className="text-xs text-[hsl(var(--muted-foreground))] mb-2 block font-medium">
+                <label className="text-xs text-slate-500 mb-2 block font-medium">
                   ID Document
                 </label>
                 <label
                   htmlFor="kyc-file"
                   className="flex flex-col items-center justify-center w-full h-40 rounded-2xl border-2 border-dashed cursor-pointer transition-all group"
                   style={{
-                    borderColor: preview ? "hsl(var(--primary))" : "hsl(var(--border))",
-                    backgroundColor: preview ? "hsl(var(--primary)/0.04)" : "hsl(var(--muted))",
+                    borderColor: preview ? "hsl(var(--primary))" : "#cbd5e1", // slate-300
+                    backgroundColor: preview ? "hsl(var(--primary)/0.04)" : "#f8fafc", // slate-50
                   }}
                 >
                   {preview ? (
                     <img src={preview} alt="Preview" className="h-full w-full object-contain rounded-xl p-2" />
                   ) : (
                     <div className="text-center">
-                      <FileImage size={32} className="text-[hsl(var(--muted-foreground))] mx-auto mb-2 group-hover:text-[hsl(var(--primary))] transition" />
-                      <p className="text-sm text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition font-medium">
+                      <FileImage size={32} className="text-slate-400 mx-auto mb-2 group-hover:scale-110 transition cursor-pointer" />
+                      <p className="text-sm text-slate-500 group-hover:text-slate-900 transition font-medium">
                         Click to upload
                       </p>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
+                      <p className="text-xs text-slate-400 mt-1">
                         JPG, PNG, WEBP or PDF
                       </p>
                     </div>
@@ -136,7 +138,7 @@ function KycModal({ onClose, onSuccess }) {
                   />
                 </label>
                 {file && (
-                  <p className="text-xs text-[hsl(var(--primary))] mt-2 flex items-center gap-1.5 font-medium">
+                  <p className="text-xs mt-2 flex items-center gap-1.5 font-medium" style={{ color: 'hsl(var(--primary))' }}>
                     <CheckCircle2 size={12} /> {file.name}
                   </p>
                 )}

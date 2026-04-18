@@ -38,49 +38,49 @@ export default function ReviewModal({ item, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-2xl w-full max-w-md p-8 shadow-2xl relative animate-fade-in">
+      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-8 shadow-2xl relative animate-fade-in">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition"
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-900 transition"
         >
           <X size={20} />
         </button>
 
         {success ? (
           <div className="text-center py-6 animate-fade-in">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 size={32} className="text-emerald-400" />
+            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={32} className="text-emerald-500" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Thank You!</h3>
-            <p className="text-[hsl(var(--muted-foreground))] text-sm">
+            <h3 className="text-xl font-bold mb-2 text-slate-900">Thank You!</h3>
+            <p className="text-slate-500 text-sm">
               Your review helps the rentKaro community stay safe and trust-worthy.
             </p>
           </div>
         ) : (
           <>
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-1">Rate your experience</h3>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                How was the <span className="text-[hsl(var(--primary))] font-semibold">{item.productName}</span>?
+              <h3 className="text-2xl font-bold mb-1 text-slate-900">Rate your experience</h3>
+              <p className="text-sm text-slate-500">
+                How was the <span className="font-semibold" style={{ color: 'hsl(var(--primary))' }}>{item.productName}</span>?
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))] mb-3">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
                   Overall Rating
                 </label>
-                <div className="flex justify-center py-2 bg-[hsl(var(--muted))] rounded-xl border border-[hsl(var(--border))]">
+                <div className="flex justify-center py-2 bg-slate-50 rounded-xl border border-slate-200">
                   <StarRating rating={rating} setRating={setRating} interactive size={32} />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))] mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
                   Share more details
                 </label>
                 <textarea
-                  className="w-full bg-[hsl(var(--muted))] border border-[hsl(var(--border))] rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--primary))] transition-all h-32 resize-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-slate-300 transition-all h-32 resize-none text-slate-900 placeholder:text-slate-400"
                   placeholder="How was the item condition? Was the owner helpful?"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
