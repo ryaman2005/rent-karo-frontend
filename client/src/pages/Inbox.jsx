@@ -67,8 +67,11 @@ function Inbox() {
         ) : (
           <div className="space-y-4">
             {conversations.map((rental) => {
-              const isOwner = rental.owner._id === currentUser._id;
+              const isOwner = rental.owner?._id === currentUser._id;
               const otherUser = isOwner ? rental.user : rental.owner;
+
+              // Skip rendering if the other user's account was deleted
+              if (!otherUser) return null;
 
               return (
                 <div
