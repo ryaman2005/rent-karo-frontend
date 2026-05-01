@@ -3,6 +3,13 @@ const router = express.Router();
 const Product = require("../models/Product");
 const protect = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 
 // Get all products (with optional distance filtering)
@@ -36,20 +43,18 @@ router.get("/", async (req, res) => {
 
 
 // Get products listed by logged user
-router.get("/my-listings/:userId", async (req,res)=>{
-
+router.get("/my-listings/:userId", protect, async (req,res)=>{
   try{
+    // Ensure the user is requesting their own listings
+    if (req.user.toString() !== req.params.userId) {
+      return res.status(403).json({ message: "Not authorized to view these listings" });
+    }
 
-    const products = await Product.find({ owner: req.params.userId });
-
+    const products = await Product.find({ owner: req.params.userId }).sort({createdAt: -1});
     res.json(products);
-
   }catch(error){
-
     res.status(500).json({message:"Server error"});
-
   }
-
 });
 
 
@@ -119,12 +124,37 @@ router.post("/", protect, (req, res) => {
 
 
 // Delete product
-router.delete("/:id", async (req,res)=>{
+router.delete("/:id", protect, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-  await Product.findByIdAndDelete(req.params.id);
+    // Verify ownership
+    if (product.owner.toString() !== req.user.toString()) {
+      return res.status(403).json({ message: "Not authorized to delete this product" });
+    }
 
-  res.json({message:"Product deleted"});
+    // Delete image from Cloudinary
+    if (product.image && product.image.includes("cloudinary.com")) {
+      const parts = product.image.split("/");
+      const uploadIndex = parts.findIndex(p => p === "upload");
+      if (uploadIndex !== -1) {
+        const publicIdWithExt = parts.slice(uploadIndex + 2).join("/");
+        const publicId = publicIdWithExt.substring(0, publicIdWithExt.lastIndexOf('.'));
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(`[Cloudinary] Deleted asset: ${publicId}`);
+        }
+      }
+    }
 
+    await product.deleteOne();
+    res.json({ message: "Product deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
 

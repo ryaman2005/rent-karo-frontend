@@ -17,8 +17,11 @@ function MyListings() {
 
   useEffect(() => {
     if (!user) return;
+    const token = localStorage.getItem("token");
     axios
-      .get(`${API_URL}/api/products/my-listings/${user._id}`)
+      .get(`${API_URL}/api/products/my-listings/${user._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
@@ -29,7 +32,10 @@ function MyListings() {
   const deleteProduct = async (id) => {
     setDeletingId(id);
     try {
-      await axios.delete(`${API_URL}/api/products/${id}`);
+      const token = localStorage.getItem("token");
+      await axios.delete(`${API_URL}/api/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setProducts((prev) => prev.filter((p) => p._id !== id));
       setConfirmId(null);
     } catch (err) {
