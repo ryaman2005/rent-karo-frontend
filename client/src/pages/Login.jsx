@@ -161,7 +161,7 @@ function Login() {
         const res = await axios.post(`${API_URL}/api/auth/register`, {
           name: form.name, email: form.email, password: form.password, role,
         });
-        showToast("OTP sent! (If it doesn't arrive, use fallback: 123456)", "success");
+        showToast("OTP sent! Please check your email.", "success");
         setSignupStep(2);
       } else {
         const res = await axios.post(`${API_URL}/api/auth/login`, {

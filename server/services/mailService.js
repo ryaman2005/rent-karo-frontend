@@ -1,10 +1,40 @@
-const { Resend } = require("resend");
+// Use Brevo API via native fetch
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
-// Initialize Resend with the provided API Key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Brevo requires sending from the verified email
+const SENDER_EMAIL = "girrajbohra50@gmail.com"; 
 
-// For unverified domains on Resend, you MUST send from "onboarding@resend.dev"
-const SENDER_EMAIL = "onboarding@resend.dev";
+async function sendBrevoEmail({ toEmail, subject, html }) {
+  if (!BREVO_API_KEY) {
+    console.error("[Email] BREVO_API_KEY not found! Email not sent.");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": BREVO_API_KEY,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        sender: { email: SENDER_EMAIL, name: "rentKaro" },
+        to: [{ email: toEmail }],
+        subject: subject,
+        htmlContent: html
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send email via Brevo");
+    }
+  } catch (err) {
+    console.error("[Email] Error:", err.message);
+    throw err;
+  }
+}
 
 /**
  * Send an Email confirmation to the renter.
@@ -37,13 +67,11 @@ async function sendRentalConfirmation({ toEmail, renterName, productName, durati
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `rentKaro <${SENDER_EMAIL}>`,
-      to: toEmail,
+    await sendBrevoEmail({
+      toEmail,
       subject: `Rental Confirmed: ${productName}`,
-      html,
+      html
     });
-    if (error) throw new Error(error.message);
     console.log(`[Email] Confirmation sent to ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send message:", err.message);
@@ -67,13 +95,11 @@ async function sendRentalRejection({ toEmail, renterName, productName }) {
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `rentKaro <${SENDER_EMAIL}>`,
-      to: toEmail,
+    await sendBrevoEmail({
+      toEmail,
       subject: `Rental Update: ${productName}`,
-      html,
+      html
     });
-    if (error) throw new Error(error.message);
     console.log(`[Email] Rejection sent to ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send rejection:", err.message);
@@ -101,21 +127,14 @@ async function sendOtpEmail({ toEmail, otp }) {
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `rentKaro <${SENDER_EMAIL}>`,
-      to: toEmail,
+    await sendBrevoEmail({
+      toEmail,
       subject: `Your Verification Code: ${otp}`,
-      html,
+      html
     });
-    
-    if (error) {
-      console.error("[Email] Resend API Error Details:", error);
-      throw new Error(error.message);
-    }
-    
     console.log(`[Email] OTP sent to ${toEmail}`);
   } catch (err) {
-    console.error("[Email] Failed to send OTP via Resend:", err.message);
+    console.error("[Email] Failed to send OTP via Brevo:", err.message);
   }
 }
 
@@ -137,13 +156,11 @@ async function sendRentalPlaced({ toEmail, renterName, productName }) {
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `rentKaro <${SENDER_EMAIL}>`,
-      to: toEmail,
+    await sendBrevoEmail({
+      toEmail,
       subject: `Rental Request Placed: ${productName}`,
-      html,
+      html
     });
-    if (error) throw new Error(error.message);
     console.log(`[Email] Rental placed email sent to renter: ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send rental placed email:", err.message);
@@ -167,13 +184,11 @@ async function sendOwnerNewRequest({ toEmail, ownerName, renterName, productName
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `rentKaro <${SENDER_EMAIL}>`,
-      to: toEmail,
+    await sendBrevoEmail({
+      toEmail,
       subject: `New Rental Request for ${productName}`,
-      html,
+      html
     });
-    if (error) throw new Error(error.message);
     console.log(`[Email] New request email sent to owner: ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send new request email to owner:", err.message);
