@@ -38,13 +38,13 @@ async function sendRentalConfirmation({ toEmail, renterName, productName, durati
 
   try {
     const { data, error } = await resend.emails.send({
-      from: \`rentKaro <\${SENDER_EMAIL}>\`,
+      from: `rentKaro <${SENDER_EMAIL}>`,
       to: toEmail,
-      subject: \`Rental Confirmed: \${productName}\`,
+      subject: `Rental Confirmed: ${productName}`,
       html,
     });
     if (error) throw new Error(error.message);
-    console.log(\`[Email] Confirmation sent to \${toEmail}\`);
+    console.log(`[Email] Confirmation sent to ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send message:", err.message);
   }
@@ -68,13 +68,13 @@ async function sendRentalRejection({ toEmail, renterName, productName }) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: \`rentKaro <\${SENDER_EMAIL}>\`,
+      from: `rentKaro <${SENDER_EMAIL}>`,
       to: toEmail,
-      subject: \`Rental Update: \${productName}\`,
+      subject: `Rental Update: ${productName}`,
       html,
     });
     if (error) throw new Error(error.message);
-    console.log(\`[Email] Rejection sent to \${toEmail}\`);
+    console.log(`[Email] Rejection sent to ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send rejection:", err.message);
   }
@@ -102,9 +102,9 @@ async function sendOtpEmail({ toEmail, otp }) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: \`rentKaro <\${SENDER_EMAIL}>\`,
+      from: `rentKaro <${SENDER_EMAIL}>`,
       to: toEmail,
-      subject: \`Your Verification Code: \${otp}\`,
+      subject: `Your Verification Code: ${otp}`,
       html,
     });
     
@@ -113,7 +113,7 @@ async function sendOtpEmail({ toEmail, otp }) {
       throw new Error(error.message);
     }
     
-    console.log(\`[Email] OTP sent to \${toEmail}\`);
+    console.log(`[Email] OTP sent to ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send OTP via Resend:", err.message);
   }
@@ -138,13 +138,13 @@ async function sendRentalPlaced({ toEmail, renterName, productName }) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: \`rentKaro <\${SENDER_EMAIL}>\`,
+      from: `rentKaro <${SENDER_EMAIL}>`,
       to: toEmail,
-      subject: \`Rental Request Placed: \${productName}\`,
+      subject: `Rental Request Placed: ${productName}`,
       html,
     });
     if (error) throw new Error(error.message);
-    console.log(\`[Email] Rental placed email sent to renter: \${toEmail}\`);
+    console.log(`[Email] Rental placed email sent to renter: ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send rental placed email:", err.message);
   }
@@ -168,13 +168,13 @@ async function sendOwnerNewRequest({ toEmail, ownerName, renterName, productName
 
   try {
     const { data, error } = await resend.emails.send({
-      from: \`rentKaro <\${SENDER_EMAIL}>\`,
+      from: `rentKaro <${SENDER_EMAIL}>`,
       to: toEmail,
-      subject: \`New Rental Request for \${productName}\`,
+      subject: `New Rental Request for ${productName}`,
       html,
     });
     if (error) throw new Error(error.message);
-    console.log(\`[Email] New request email sent to owner: \${toEmail}\`);
+    console.log(`[Email] New request email sent to owner: ${toEmail}`);
   } catch (err) {
     console.error("[Email] Failed to send new request email to owner:", err.message);
   }
