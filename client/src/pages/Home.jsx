@@ -13,6 +13,7 @@ import { useMagneticCursor } from "../hooks/useMagneticCursor";
 import CinematicText from "../components/CinematicText";
 import ParticleField from "../components/ParticleField";
 import Card3D from "../components/Card3D";
+import ProductCard from "../components/ProductCard";
 
 /* ── Skeleton Card ── */
 function SkeletonCard() {
@@ -405,44 +406,7 @@ function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product, i) => (
-                <Card3D key={product._id} intensity={4}>
-                  <div
-                    data-reveal data-delay={`${i * 80}`}
-                    className="reveal bg-[hsl(var(--card))] rounded-2xl overflow-hidden group cursor-pointer border border-[hsl(var(--border))] shadow-sm hover:shadow-lg transition-all duration-300"
-                    onClick={() => navigate(`/product/${product._id}`)}
-                  >
-                    <div className="relative overflow-hidden h-56">
-                      <img
-                        src={product.image} alt={product.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      {product.category && (
-                        <span className="absolute top-3 left-3 text-xs font-semibold text-white bg-[hsl(var(--primary))] px-2.5 py-1 rounded-md">
-                          {product.category}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <h3 className="text-base font-bold mb-1 group-hover:text-[hsl(var(--primary))] transition-colors duration-200 line-clamp-1 text-[hsl(var(--foreground))]">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-end gap-1 mb-1">
-                        <span className="text-[hsl(var(--primary))] font-black text-xl">₹{product.price}</span>
-                        <span className="text-[hsl(var(--muted-foreground)/0.7)] text-sm mb-0.5">/month</span>
-                      </div>
-                      <p className="text-[hsl(var(--muted-foreground)/0.7)] text-xs">
-                        ₹{product.deposit} refundable deposit
-                      </p>
-                      <button
-                        className="mt-4 w-full btn-primary font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/product/${product._id}`); }}
-                      >
-                        <span>View Details</span>
-                        <ChevronRight size={15} />
-                      </button>
-                    </div>
-                  </div>
-                </Card3D>
+                <ProductCard key={product._id} product={product} index={i} />
               ))}
             </div>
           )}

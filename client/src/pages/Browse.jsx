@@ -5,6 +5,7 @@ import { API_URL } from "../config";
 import { Search, Package, X, ArrowRight, MapPin, Loader2, Map, List } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import Card3D from "../components/Card3D";
+import ProductCard from "../components/ProductCard";
 import CinematicText from "../components/CinematicText";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -322,70 +323,7 @@ function Browse() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filtered.map((product, i) => (
-                  <Link key={product._id} to={`/product/${product._id}`}>
-                    <Card3D intensity={4}>
-                      <div
-                        data-reveal
-                        data-delay={`${(i % 8) * 60}`}
-                        className="reveal rounded-2xl overflow-hidden group h-full flex flex-col border transition-all duration-200"
-                        style={{
-                          backgroundColor: 'hsl(var(--card))',
-                          borderColor: 'hsl(var(--border))',
-                          boxShadow: 'var(--shadow-card)',
-                        }}
-                      >
-                        {/* Image */}
-                        <div className="relative overflow-hidden h-48 flex-shrink-0">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                          {product.category && (
-                            <span
-                              className="absolute top-3 left-3 text-xs font-bold text-white px-2.5 py-1 rounded-full"
-                              style={{ backgroundColor: 'hsl(var(--primary))' }}
-                            >
-                              {product.category}
-                            </span>
-                          )}
-                          {product.location?.coordinates && (
-                            <span className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-1 rounded-full flex items-center gap-1">
-                              <MapPin size={9} /> Located
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Info */}
-                        <div className="p-5 flex flex-col flex-1">
-                          <h2
-                            className="font-bold mb-2 line-clamp-1 transition-colors duration-200"
-                            style={{ color: 'hsl(var(--foreground))' }}
-                          >
-                            {product.name}
-                          </h2>
-                          <div className="flex items-end gap-1 mb-1">
-                            <span className="font-black text-xl" style={{ color: 'hsl(var(--primary))' }}>₹{product.price}</span>
-                            <span className="text-xs mb-0.5" style={{ color: 'hsl(var(--muted-foreground))' }}>/mo</span>
-                          </div>
-                          <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>₹{product.deposit} deposit</p>
-                          {product.address && (
-                            <p className="text-xs mt-1 flex items-center gap-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                              <MapPin size={10} /> {product.address}
-                            </p>
-                          )}
-                          <div className="mt-auto pt-4">
-                            <div
-                              className="flex items-center text-xs font-semibold gap-1 group-hover:gap-2 transition-all duration-200"
-                              style={{ color: 'hsl(var(--primary))' }}
-                            >
-                              View Details <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card3D>
-                  </Link>
+                  <ProductCard key={product._id} product={product} index={i} />
                 ))}
               </div>
             )}
