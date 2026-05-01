@@ -268,7 +268,7 @@ function ProductDetails() {
                   </span>
                 )}
 
-                <h1 className="text-4xl font-extrabold mb-4">{product.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-extrabold mb-4">{product.name}</h1>
 
                 {/* Specs Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-8">

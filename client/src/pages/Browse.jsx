@@ -106,11 +106,11 @@ function Browse() {
         {/* Hero Header */}
         <div className="mb-10 relative">
           <p className="text-sm font-semibold tracking-widest uppercase mb-3 animate-fade-in" style={{ color: 'hsl(var(--primary))' }}>Marketplace</p>
-          <h1 className="text-5xl md:text-6xl font-black mb-3 font-display" style={{ color: 'hsl(var(--foreground))' }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-3 font-display" style={{ color: 'hsl(var(--foreground))' }}>
             Browse{" "}
             <span style={{ color: 'hsl(var(--primary))' }}>Rentals</span>
           </h1>
-          <p className="text-lg animate-fade-in delay-200" style={{ color: 'hsl(var(--muted-foreground))' }}>
+          <p className="text-base sm:text-lg animate-fade-in delay-200" style={{ color: 'hsl(var(--muted-foreground))' }}>
             Find exactly what you need, on your terms.
           </p>
         </div>
@@ -212,7 +212,7 @@ function Browse() {
 
         {/* Results count */}
         {!loading && (
-          <p className="text-sm mb-6 animate-fade-in" style={{ color: 'hsl(var(--muted-foreground))' }}>
+          <p className="text-xs sm:text-sm mb-6 animate-fade-in" style={{ color: 'hsl(var(--muted-foreground))' }}>
             <span className="font-semibold" style={{ color: 'hsl(var(--primary))' }}>{filtered.length}</span>{" "}
             {filtered.length === 1 ? "item" : "items"} found
             {search && (
@@ -239,7 +239,7 @@ function Browse() {
                 </button>
               </div>
             ) : (
-              <div className="rounded-2xl overflow-hidden border mb-8" style={{ borderColor: 'hsl(var(--border))', height: '500px' }}>
+              <div className="rounded-2xl overflow-hidden border mb-8 h-[350px] md:h-[500px]" style={{ borderColor: 'hsl(var(--border))' }}>
                 <MapContainer
                   center={[loc.lat, loc.lng]}
                   zoom={13}

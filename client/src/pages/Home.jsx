@@ -176,7 +176,7 @@ function Home() {
         </div>
 
         {/* Cinematic Headline */}
-        <h1 className="text-6xl md:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl animate-fade-in font-display" style={{ color: 'hsl(var(--foreground))' }}>
+        <h1 className="text-4xl sm:text-5xl md:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl animate-fade-in font-display" style={{ color: 'hsl(var(--foreground))' }}>
           <CinematicText text="Rent Smarter." stagger={40} delay={200} />
           <br />
           <span style={{ color: 'hsl(var(--primary))' }}>
@@ -204,7 +204,7 @@ function Home() {
         </div>
 
         {/* Premium Stats */}
-        <div className="animate-fade-in delay-600 mt-24 grid grid-cols-2 md:grid-cols-4 gap-5 w-full max-w-4xl">
+        <div className="animate-fade-in delay-600 mt-16 md:mt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 w-full max-w-4xl">
           {STATS.map((stat, i) => {
             const getIconColor = (index) => {
               const colors = ['var(--primary)', '139 65% 60%', '200 95% 45%', '160 65% 45%'];
@@ -288,19 +288,19 @@ function Home() {
       {/* ── HOW IT WORKS ── */}
       <section className="py-28 px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 md:mb-16">
             <p data-reveal className="reveal text-[hsl(var(--primary))] text-xs font-bold tracking-widest uppercase mb-3">
               Simple Process
             </p>
-            <h2 data-reveal data-delay="100" className="reveal text-4xl md:text-5xl font-black mb-4">
+            <h2 data-reveal data-delay="100" className="reveal text-3xl sm:text-4xl md:text-5xl font-black mb-4">
               How <span className="gradient-text">rentKaro</span> Works
             </h2>
-            <p data-reveal data-delay="200" className="reveal text-[hsl(var(--muted-foreground))] max-w-md mx-auto text-base">
+            <p data-reveal data-delay="200" className="reveal text-[hsl(var(--muted-foreground))] max-w-md mx-auto text-sm sm:text-base">
               From browsing to returning — seamless at every step.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             <div className="hidden md:block absolute top-[38px] left-[18%] right-[18%] h-px"
               style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent)" }} />
 
@@ -330,7 +330,7 @@ function Home() {
       {/* ── TRUST SIGNALS ── */}
       <section className="py-16 px-6 bg-[hsl(var(--card))] border-y border-slate-100">
         <div className="max-w-5xl mx-auto">
-          <div data-reveal className="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div data-reveal className="reveal grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {TRUST_ITEMS.map((item) => (
               <div
                 key={item.title}
@@ -358,10 +358,10 @@ function Home() {
             <p data-reveal className="reveal text-[hsl(var(--primary))] text-xs font-bold tracking-widest uppercase mb-3">
               Marketplace
             </p>
-            <h2 data-reveal data-delay="100" className="reveal text-4xl md:text-5xl font-black mb-3">
+            <h2 data-reveal data-delay="100" className="reveal text-3xl sm:text-4xl md:text-5xl font-black mb-3">
               Featured <span className="gradient-text">Listings</span>
             </h2>
-            <p data-reveal data-delay="200" className="reveal text-[hsl(var(--muted-foreground))] mb-12 text-base">
+            <p data-reveal data-delay="200" className="reveal text-[hsl(var(--muted-foreground))] mb-8 md:mb-12 text-sm md:text-base">
               Handpicked items available to rent today.
             </p>
           </div>
@@ -423,7 +423,7 @@ function Home() {
       </section>
 
       {/* ── PREMIUM BOTTOM CTA ── */}
-      <section className="relative py-32 px-6 overflow-hidden">
+      <section className="relative py-20 md:py-32 px-4 md:px-6 overflow-hidden">
         {/* Dynamic Background Gradient */}
         <div 
           className="absolute inset-0 z-0" 
@@ -453,7 +453,7 @@ function Home() {
 
         {/* Content Container */}
         <div data-reveal className="reveal relative z-10 max-w-4xl mx-auto">
-          <div className="bg-white/10 border border-white/20 backdrop-blur-xl rounded-[3rem] p-12 md:p-20 text-center shadow-2xl relative overflow-hidden">
+          <div className="bg-white/10 border border-white/20 backdrop-blur-xl rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-20 text-center shadow-2xl relative overflow-hidden">
             {/* Subtle inner corner glow */}
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent opacity-50 pointer-events-none" />
 
@@ -461,7 +461,7 @@ function Home() {
               <Sparkles size={28} style={{ color: 'hsl(var(--primary))' }} />
             </div>
             
-            <h2 className="text-5xl md:text-6xl font-black mb-6 text-white font-display tracking-tight leading-tight drop-shadow-sm">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 text-white font-display tracking-tight leading-tight drop-shadow-sm">
               Ready to get started?
             </h2>
             
@@ -480,7 +480,7 @@ function Home() {
               </button>
               <button 
                 onClick={() => navigate("/list-item")} 
-                className="bg-white/10 backdrop-blur-md border px-10 py-4 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-base text-white font-bold"
+                className="bg-white/10 backdrop-blur-md border px-10 py-4 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-base text-white font-bold w-full sm:w-auto"
                 style={{ borderColor: 'rgba(255,255,255,0.4)' }}
               >
                 List Your Items
