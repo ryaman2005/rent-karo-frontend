@@ -142,21 +142,6 @@ router.get("/owner", protect, async (req, res) => {
   }
 });
 
-// ── GET /api/rentals/inbox — All confirmed rentals for Chat ───────────
-router.get("/inbox", protect, async (req, res) => {
-  try {
-    const rentals = await Rental.find({
-      $or: [{ user: req.user }, { owner: req.user }],
-      status: "confirmed"
-    })
-      .populate("user", "name avatar")
-      .populate("owner", "name avatar")
-      .sort({ updatedAt: -1 });
-    res.json(rentals);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 // ── PATCH /api/rentals/:id — Owner confirms or rejects ────────────────
 router.patch("/:id", protect, async (req, res) => {

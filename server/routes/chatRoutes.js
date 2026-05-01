@@ -1,8 +1,96 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Message = require("../models/Message");
 const Rental = require("../models/Rental");
+const User = require("../models/User");
 const protect = require("../middleware/authMiddleware");
+
+// ── GET /api/chat/inbox — Unified inbox for Rentals and Direct Messages ──
+router.get("/inbox", protect, async (req, res) => {
+  try {
+    const userId = req.user;
+
+    // 1. Fetch Confirmed Rentals
+    const rentals = await Rental.find({
+      $or: [{ user: userId }, { owner: userId }],
+      status: "confirmed"
+    })
+      .populate("user", "name avatar")
+      .populate("owner", "name avatar")
+      .lean();
+
+    // 2. Fetch Direct Messages (rentalId: null) involving this user
+    const dmAggregation = await Message.aggregate([
+      {
+        $match: {
+          rentalId: null,
+          $or: [{ sender: new mongoose.Types.ObjectId(userId) }, { receiver: new mongoose.Types.ObjectId(userId) }]
+        }
+      },
+      {
+        $sort: { createdAt: -1 } // sort latest first
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ["$sender", new mongoose.Types.ObjectId(userId)] },
+              "$receiver",
+              "$sender"
+            ]
+          },
+          latestMessage: { $first: "$$ROOT" }
+        }
+      }
+    ]);
+
+    // Populate the other user for DMs
+    const dmPartnerIds = dmAggregation.map(dm => dm._id);
+    const dmPartners = await User.find({ _id: { $in: dmPartnerIds } }).select("name avatar").lean();
+    const partnerMap = dmPartners.reduce((acc, user) => {
+      acc[user._id.toString()] = user;
+      return acc;
+    }, {});
+
+    const conversations = [];
+
+    // Add rentals to conversations
+    for (const r of rentals) {
+      const isOwner = r.owner && r.owner._id.toString() === userId.toString();
+      const otherUser = isOwner ? r.user : r.owner;
+      if (!otherUser) continue; // skip if user was deleted
+      
+      conversations.push({
+        type: "rental",
+        rental: r,
+        otherUser: otherUser,
+        updatedAt: r.updatedAt
+      });
+    }
+
+    // Add DMs to conversations
+    for (const dm of dmAggregation) {
+      const otherUser = partnerMap[dm._id.toString()];
+      if (!otherUser) continue; // skip if user was deleted
+
+      conversations.push({
+        type: "direct",
+        otherUser: otherUser,
+        latestMessage: dm.latestMessage.text,
+        updatedAt: dm.latestMessage.createdAt
+      });
+    }
+
+    // Sort all by updatedAt descending
+    conversations.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    res.json(conversations);
+  } catch (error) {
+    console.error("Inbox error:", error);
+    res.status(500).json({ message: "Server error fetching inbox" });
+  }
+});
 
 // ── GET /api/chat/:rentalId ──
 // Fetch all messages for a specific rental transaction

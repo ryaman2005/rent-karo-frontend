@@ -10,6 +10,7 @@ function Inbox() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatRental, setChatRental] = useState(null);
+  const [chatTargetUser, setChatTargetUser] = useState(null);
   const navigate = useNavigate();
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -18,7 +19,7 @@ function Inbox() {
     const fetchInbox = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_URL}/api/rentals/inbox`, {
+        const res = await axios.get(`${API_URL}/api/chat/inbox`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setConversations(res.data);
@@ -43,7 +44,7 @@ function Inbox() {
               </span>
             </h1>
             <p className="text-[hsl(var(--muted-foreground))] text-sm animate-fade-in delay-200">
-              Coordinate pickups and drop-offs with your renters and owners.
+              Coordinate pickups, drop-offs, and talk to support.
             </p>
           </div>
         </div>
@@ -66,17 +67,21 @@ function Inbox() {
           </div>
         ) : (
           <div className="space-y-4">
-            {conversations.map((rental) => {
-              const isOwner = rental.owner?._id === currentUser._id;
-              const otherUser = isOwner ? rental.user : rental.owner;
-
-              // Skip rendering if the other user's account was deleted
-              if (!otherUser) return null;
+            {conversations.map((conv, idx) => {
+              const otherUser = conv.otherUser;
 
               return (
                 <div
-                  key={rental._id}
-                  onClick={() => setChatRental(rental)}
+                  key={conv.type === "rental" ? conv.rental._id : `dm_${otherUser._id}`}
+                  onClick={() => {
+                    if (conv.type === "rental") {
+                      setChatRental(conv.rental);
+                      setChatTargetUser(null);
+                    } else {
+                      setChatRental(null);
+                      setChatTargetUser(otherUser);
+                    }
+                  }}
                   className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] hover:border-[hsl(var(--border))] rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-500 group animate-fade-in"
                 >
                   <div className="flex items-center gap-4">
@@ -93,12 +98,18 @@ function Inbox() {
                       <h3 className="font-bold text-lg group-hover:text-[hsl(var(--primary))] transition-colors">
                         {otherUser.name}
                       </h3>
-                      <p className="text-sm text-[hsl(var(--muted-foreground))] flex items-center gap-2">
-                        <span className="text-[hsl(var(--primary))]/80 font-medium">
-                          {isOwner ? "Renting your" : "Owner of"}
-                        </span>
-                        {rental.productName}
-                      </p>
+                      {conv.type === "rental" ? (
+                        <p className="text-sm text-[hsl(var(--muted-foreground))] flex items-center gap-2">
+                          <span className="text-[hsl(var(--primary))]/80 font-medium">
+                            {conv.rental.owner && conv.rental.owner._id === currentUser._id ? "Renting your" : "Owner of"}
+                          </span>
+                          {conv.rental.productName}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-[hsl(var(--muted-foreground))] truncate max-w-xs">
+                          {conv.latestMessage || "Direct Message"}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -113,8 +124,12 @@ function Inbox() {
         )}
       </div>
 
-      {chatRental && (
-        <ChatModal rental={chatRental} onClose={() => setChatRental(null)} />
+      {(chatRental || chatTargetUser) && (
+        <ChatModal 
+          rental={chatRental} 
+          targetUser={chatTargetUser} 
+          onClose={() => { setChatRental(null); setChatTargetUser(null); }} 
+        />
       )}
     </div>
   );
