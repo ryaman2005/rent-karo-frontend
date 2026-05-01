@@ -1,7 +1,7 @@
 const { Resend } = require("resend");
 
 // Initialize Resend with the provided API Key
-const resend = new Resend(process.env.RESEND_API_KEY || "re_UkYrGdYx_8fE3f4Ht1GSSNFtks2WRg5Jx");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // For unverified domains on Resend, you MUST send from "onboarding@resend.dev"
 const SENDER_EMAIL = "onboarding@resend.dev";
