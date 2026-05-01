@@ -71,22 +71,22 @@ router.post("/", protect, async (req, res) => {
     const renter = await User.findById(req.user).select("name email phone");
 
     // ── Email notification to renter ──
-    await sendRentalPlaced({
+    sendRentalPlaced({
       toEmail: renter.email,
       renterName: renter.name,
       productName,
-    });
+    }).catch(console.error);
 
     // ── Emit real-time notification to the owner ──
     if (ownerId) {
       // ── Email notification to owner ──
       if (ownerUser) {
-        await sendOwnerNewRequest({
+        sendOwnerNewRequest({
           toEmail: ownerUser.email,
           ownerName: ownerUser.name,
           renterName: renter.name,
           productName,
-        });
+        }).catch(console.error);
       }
       const io = req.app.get("io");
       const userSockets = req.app.get("userSockets");
@@ -200,20 +200,20 @@ router.patch("/:id", protect, async (req, res) => {
       const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       const dur = Math.max(1, Math.round(days / 30)); 
 
-      await sendRentalConfirmation({
+      sendRentalConfirmation({
         toEmail: renter.email,
         renterName: renter.name,
         productName: rental.productName,
         duration: dur,
         price: rental.price,
         deposit: rental.deposit,
-      });
+      }).catch(console.error);
     } else {
-      await sendRentalRejection({
+      sendRentalRejection({
         toEmail: renter.email,
         renterName: renter.name,
         productName: rental.productName,
-      });
+      }).catch(console.error);
     }
 
     res.json({ message: `Rental ${status} successfully.`, rental });

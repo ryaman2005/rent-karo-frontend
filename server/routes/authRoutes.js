@@ -35,8 +35,8 @@ router.post("/register", async (req, res) => {
     // Save newly generated OTP
     await Otp.create({ email, otp: otpCode });
 
-    // Send the email (wait for it to guarantee delivery)
-    await sendOtpEmail({ toEmail: email, otp: otpCode });
+    // Send the email asynchronously (will likely be blocked by Render firewall, but won't hang the UI)
+    sendOtpEmail({ toEmail: email, otp: otpCode }).catch(console.error);
 
     res.status(200).json({
       message: "An OTP has been sent to your email.",
