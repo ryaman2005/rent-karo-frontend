@@ -1,25 +1,15 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  pool: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Initialize Resend with the provided API Key
+const resend = new Resend(process.env.RESEND_API_KEY || "re_UkYrGdYx_8fE3f4Ht1GSSNFtks2WRg5Jx");
+
+// For unverified domains on Resend, you MUST send from "onboarding@resend.dev"
+const SENDER_EMAIL = "onboarding@resend.dev";
 
 /**
  * Send an Email confirmation to the renter.
  */
 async function sendRentalConfirmation({ toEmail, renterName, productName, duration, price, deposit }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log("[Email] Credentials not configured — skipping message.");
-    return;
-  }
-
   if (!toEmail) return;
 
   const totalRent = parseInt(price) * duration;
@@ -47,13 +37,14 @@ async function sendRentalConfirmation({ toEmail, renterName, productName, durati
   `;
 
   try {
-    await transporter.sendMail({
-      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: \`rentKaro <\${SENDER_EMAIL}>\`,
       to: toEmail,
-      subject: `Rental Confirmed: ${productName}`,
+      subject: \`Rental Confirmed: \${productName}\`,
       html,
     });
-    console.log(`[Email] Confirmation sent to ${toEmail}`);
+    if (error) throw new Error(error.message);
+    console.log(\`[Email] Confirmation sent to \${toEmail}\`);
   } catch (err) {
     console.error("[Email] Failed to send message:", err.message);
   }
@@ -63,7 +54,7 @@ async function sendRentalConfirmation({ toEmail, renterName, productName, durati
  * Send an Email rejection notice to the renter.
  */
 async function sendRentalRejection({ toEmail, renterName, productName }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+  if (!toEmail) return;
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
@@ -76,13 +67,14 @@ async function sendRentalRejection({ toEmail, renterName, productName }) {
   `;
 
   try {
-    await transporter.sendMail({
-      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: \`rentKaro <\${SENDER_EMAIL}>\`,
       to: toEmail,
-      subject: `Rental Update: ${productName}`,
+      subject: \`Rental Update: \${productName}\`,
       html,
     });
-    console.log(`[Email] Rejection sent to ${toEmail}`);
+    if (error) throw new Error(error.message);
+    console.log(\`[Email] Rejection sent to \${toEmail}\`);
   } catch (err) {
     console.error("[Email] Failed to send rejection:", err.message);
   }
@@ -92,7 +84,7 @@ async function sendRentalRejection({ toEmail, renterName, productName }) {
  * Send an OTP Email for signup verification.
  */
 async function sendOtpEmail({ toEmail, otp }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+  if (!toEmail) return;
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
@@ -109,15 +101,21 @@ async function sendOtpEmail({ toEmail, otp }) {
   `;
 
   try {
-    await transporter.sendMail({
-      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: \`rentKaro <\${SENDER_EMAIL}>\`,
       to: toEmail,
-      subject: `Your Verification Code: ${otp}`,
+      subject: \`Your Verification Code: \${otp}\`,
       html,
     });
-    console.log(`[Email] OTP sent to ${toEmail}`);
+    
+    if (error) {
+      console.error("[Email] Resend API Error Details:", error);
+      throw new Error(error.message);
+    }
+    
+    console.log(\`[Email] OTP sent to \${toEmail}\`);
   } catch (err) {
-    console.error("[Email] Failed to send OTP:", err.message);
+    console.error("[Email] Failed to send OTP via Resend:", err.message);
   }
 }
 
@@ -125,7 +123,7 @@ async function sendOtpEmail({ toEmail, otp }) {
  * Send an Email notification to the renter that their request was placed.
  */
 async function sendRentalPlaced({ toEmail, renterName, productName }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+  if (!toEmail) return;
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
@@ -139,13 +137,14 @@ async function sendRentalPlaced({ toEmail, renterName, productName }) {
   `;
 
   try {
-    await transporter.sendMail({
-      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: \`rentKaro <\${SENDER_EMAIL}>\`,
       to: toEmail,
-      subject: `Rental Request Placed: ${productName}`,
+      subject: \`Rental Request Placed: \${productName}\`,
       html,
     });
-    console.log(`[Email] Rental placed email sent to renter: ${toEmail}`);
+    if (error) throw new Error(error.message);
+    console.log(\`[Email] Rental placed email sent to renter: \${toEmail}\`);
   } catch (err) {
     console.error("[Email] Failed to send rental placed email:", err.message);
   }
@@ -155,7 +154,7 @@ async function sendRentalPlaced({ toEmail, renterName, productName }) {
  * Send an Email notification to the owner about a new rental request.
  */
 async function sendOwnerNewRequest({ toEmail, ownerName, renterName, productName }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !toEmail) return;
+  if (!toEmail) return;
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
@@ -168,13 +167,14 @@ async function sendOwnerNewRequest({ toEmail, ownerName, renterName, productName
   `;
 
   try {
-    await transporter.sendMail({
-      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: \`rentKaro <\${SENDER_EMAIL}>\`,
       to: toEmail,
-      subject: `New Rental Request for ${productName}`,
+      subject: \`New Rental Request for \${productName}\`,
       html,
     });
-    console.log(`[Email] New request email sent to owner: ${toEmail}`);
+    if (error) throw new Error(error.message);
+    console.log(\`[Email] New request email sent to owner: \${toEmail}\`);
   } catch (err) {
     console.error("[Email] Failed to send new request email to owner:", err.message);
   }
