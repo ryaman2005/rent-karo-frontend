@@ -46,6 +46,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    bio:    { type: String, default: null },
+    street: { type: String, default: null },
+    city:   { type: String, default: null },
+    state:  { type: String, default: null },
+    pin:    { type: String, default: null },
   },
   { timestamps: true }
 );

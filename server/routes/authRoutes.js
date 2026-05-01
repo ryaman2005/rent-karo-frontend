@@ -286,4 +286,31 @@ router.patch("/kyc/:id", protect, async (req, res) => {
   }
 });
 
+
+// ─── PATCH /api/auth/profile — Update profile fields ───
+router.patch("/profile", protect, async (req, res) => {
+  try {
+    const { name, phone, bio, street, city, state, pin } = req.body;
+    const user = await User.findById(req.user);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    if (name)   user.name   = name;
+    if (phone !== undefined) user.phone = phone;
+    // Store extra fields loosely (bio, address) — extend schema if needed
+    user.bio    = bio    ?? user.bio;
+    user.street = street ?? user.street;
+    user.city   = city   ?? user.city;
+    user.state  = state  ?? user.state;
+    user.pin    = pin    ?? user.pin;
+
+    await user.save();
+    res.json({
+      message: "Profile updated.",
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, phone: user.phone, bio: user.bio, street: user.street, city: user.city, state: user.state, pin: user.pin },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;

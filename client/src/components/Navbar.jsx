@@ -219,7 +219,7 @@ function Navbar() {
                 )}
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <Link to="/profile" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
                 {user.avatar ? (
                   <img
                     src={user.avatar}
@@ -240,7 +240,7 @@ function Navbar() {
                     <p className="text-[hsl(var(--primary))] text-xs capitalize mt-0.5">{user.role}</p>
                   )}
                 </div>
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 bg-[hsl(var(--muted))]/70 hover:bg-red-500/10 border border-[hsl(var(--border))]/70 hover:border-red-500/30 text-[hsl(var(--muted-foreground))] hover:text-red-400 px-4 py-2 rounded-xl text-sm transition-all duration-200"

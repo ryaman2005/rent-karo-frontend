@@ -12,6 +12,7 @@ import Admin from "./pages/Admin";
 import ListItem from "./pages/ListItem";
 import MyListings from "./pages/MyListings";
 import Inbox from "./pages/Inbox";
+import Profile from "./pages/Profile";
 import SplashScreen from "./components/SplashScreen";
 import ScrollProgress from "./components/ScrollProgress";
 import PageTransition from "./components/PageTransition";
@@ -47,6 +48,7 @@ function App() {
           <Route path="/list-item" element={<PageTransition><ListItem /></PageTransition>} />
           <Route path="/my-listings" element={<PageTransition><MyListings /></PageTransition>} />
           <Route path="/inbox" element={<PageTransition><Inbox /></PageTransition>} />
+          <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
         </Routes>
       </AnimatePresence>
     </>
