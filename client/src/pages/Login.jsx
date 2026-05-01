@@ -161,7 +161,7 @@ function Login() {
         const res = await axios.post(`${API_URL}/api/auth/register`, {
           name: form.name, email: form.email, password: form.password, role,
         });
-        showToast(res.data.message, "success");
+        showToast("OTP sent! It may take a few seconds to arrive in your inbox.", "success");
         setSignupStep(2);
       } else {
         const res = await axios.post(`${API_URL}/api/auth/login`, {
