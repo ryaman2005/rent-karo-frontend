@@ -166,10 +166,21 @@ router.post("/google", async (req, res) => {
     let user = await User.findOne({ $or: [{ googleId }, { email }] });
 
     if (user) {
+      let isUpdated = false;
       // Update googleId / avatar if signing in via Google for the first time
       if (!user.googleId) {
         user.googleId = googleId;
         user.avatar = avatar;
+        isUpdated = true;
+      }
+      
+      // Upgrade role to owner if they explicitly selected it during signup
+      if (role === "owner" && user.role === "renter") {
+        user.role = "owner";
+        isUpdated = true;
+      }
+
+      if (isUpdated) {
         await user.save();
       }
     } else {
