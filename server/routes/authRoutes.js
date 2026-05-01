@@ -97,6 +97,8 @@ router.post("/verify-otp", async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
+        phone: newUser.phone,
+        idVerificationStatus: newUser.idVerificationStatus,
       },
     });
   } catch (error) {
@@ -135,6 +137,13 @@ router.post("/login", async (req, res) => {
         email: user.email,
         role: user.role,
         avatar: user.avatar,
+        phone: user.phone,
+        bio: user.bio,
+        street: user.street,
+        city: user.city,
+        state: user.state,
+        pin: user.pin,
+        idVerificationStatus: user.idVerificationStatus,
       },
     });
   } catch (error) {
@@ -186,6 +195,13 @@ router.post("/google", async (req, res) => {
         email: user.email,
         role: user.role,
         avatar: user.avatar,
+        phone: user.phone,
+        bio: user.bio,
+        street: user.street,
+        city: user.city,
+        state: user.state,
+        pin: user.pin,
+        idVerificationStatus: user.idVerificationStatus,
       },
     });
   } catch (error) {
