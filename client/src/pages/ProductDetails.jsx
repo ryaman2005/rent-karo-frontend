@@ -2,9 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../config";
-import { ArrowLeft, Tag, IndianRupee, Shield, CheckCircle2, X, Loader2, Calendar, MapPin, User } from "lucide-react";
+import { ArrowLeft, Tag, IndianRupee, Shield, CheckCircle2, X, Loader2, Calendar, MapPin, User, ChevronRight } from "lucide-react";
 import KycModal from "../components/KycModal";
 import ReviewSection from "../components/ReviewSection";
+import { Link } from "react-router-dom";
 
 function SkeletonDetail() {
   return (
@@ -299,7 +300,7 @@ function ProductDetails() {
 
                 {/* Owner Card */}
                 {product.owner && (
-                  <div className="bg-[hsl(var(--card))]/50 border border-[hsl(var(--border))] rounded-2xl p-4 mb-8 flex items-center justify-between">
+                  <Link to={`/user/${product.owner._id}`} className="bg-[hsl(var(--card))]/50 border border-[hsl(var(--border))] rounded-2xl p-4 mb-8 flex items-center justify-between hover:bg-[hsl(var(--muted))] transition group">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center overflow-hidden border border-[hsl(var(--border))]">
                         {product.owner.avatar ? (
@@ -309,20 +310,23 @@ function ProductDetails() {
                         )}
                       </div>
                       <div>
-                        <p className="font-bold text-sm" style={{ color: 'hsl(var(--foreground))' }}>Owner: {product.owner.name}</p>
+                        <p className="font-bold text-sm group-hover:text-[hsl(var(--primary))] transition-colors" style={{ color: 'hsl(var(--foreground))' }}>Owner: {product.owner.name}</p>
                         <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--muted-foreground))' }}>Trusted Lender</p>
                       </div>
                     </div>
-                    {product.address && (
-                      <div className="flex flex-col items-end">
-                        <span className="text-[10px] text-[hsl(var(--muted-foreground))] mb-1 uppercase tracking-wider font-semibold">Location</span>
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
-                          <MapPin size={12} />
-                          {product.address}
+                    <div className="flex items-center gap-4">
+                      {product.address && (
+                        <div className="flex flex-col items-end">
+                          <span className="text-[10px] text-[hsl(var(--muted-foreground))] mb-1 uppercase tracking-wider font-semibold">Location</span>
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                            <MapPin size={12} />
+                            {product.address}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                      <ChevronRight size={18} className="text-[hsl(var(--muted-foreground))] group-hover:translate-x-1 group-hover:text-[hsl(var(--primary))] transition-all" />
+                    </div>
+                  </Link>
                 )}
               </div>
 

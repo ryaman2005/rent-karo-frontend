@@ -328,5 +328,20 @@ router.patch("/profile", protect, async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+// ─── GET /api/auth/user/:id — Fetch public user profile ───
+router.get("/user/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .select("name avatar bio city state role idVerificationStatus createdAt");
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 
 module.exports = router;
