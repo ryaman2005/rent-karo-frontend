@@ -92,6 +92,29 @@ router.get("/inbox", protect, async (req, res) => {
   }
 });
 
+// ── GET /api/chat/direct/:otherUserId — Fetch direct (Support) messages ──
+router.get("/direct/:otherUserId", protect, async (req, res) => {
+  try {
+    const { otherUserId } = req.params;
+
+    // Find messages between these two users that HAVE NO rentalId
+    const messages = await Message.find({
+      rentalId: null,
+      $or: [
+        { sender: req.user, receiver: otherUserId },
+        { sender: otherUserId, receiver: req.user }
+      ]
+    })
+      .populate("sender", "name avatar")
+      .populate("receiver", "name avatar")
+      .sort({ createdAt: 1 });
+
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching DM", error: error.message });
+  }
+});
+
 // ── GET /api/chat/:rentalId ──
 // Fetch all messages for a specific rental transaction
 router.get("/:rentalId", protect, async (req, res) => {
@@ -117,29 +140,6 @@ router.get("/:rentalId", protect, async (req, res) => {
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: "Error fetching messages", error: error.message });
-  }
-});
-
-// ── GET /api/chat/direct/:otherUserId — Fetch direct (Support) messages ──
-router.get("/direct/:otherUserId", protect, async (req, res) => {
-  try {
-    const { otherUserId } = req.params;
-
-    // Find messages between these two users that HAVE NO rentalId
-    const messages = await Message.find({
-      rentalId: null,
-      $or: [
-        { sender: req.user, receiver: otherUserId },
-        { sender: otherUserId, receiver: req.user }
-      ]
-    })
-      .populate("sender", "name avatar")
-      .populate("receiver", "name avatar")
-      .sort({ createdAt: 1 });
-
-    res.json(messages);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching DM", error: error.message });
   }
 });
 

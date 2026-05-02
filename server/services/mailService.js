@@ -1,35 +1,28 @@
-// Use Brevo API via native fetch
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const nodemailer = require("nodemailer");
 
-// Brevo requires sending from the verified email
-const SENDER_EMAIL = "girrajbohra50@gmail.com"; 
+// Use nodemailer with Gmail since the user's Gmail is verified and works
+const transporter = nodemailer.createTransport({
+  pool: true,
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-async function sendBrevoEmail({ toEmail, subject, html }) {
-  if (!BREVO_API_KEY) {
-    console.error("[Email] BREVO_API_KEY not found! Email not sent.");
+async function sendEmail({ toEmail, subject, html }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error("[Email] EMAIL_USER or EMAIL_PASS not found! Email not sent.");
     return;
   }
 
   try {
-    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: {
-        "api-key": BREVO_API_KEY,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        sender: { email: SENDER_EMAIL, name: "rentKaro" },
-        to: [{ email: toEmail }],
-        subject: subject,
-        htmlContent: html
-      })
+    await transporter.sendMail({
+      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: subject,
+      html: html,
     });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to send email via Brevo");
-    }
   } catch (err) {
     console.error("[Email] Error:", err.message);
     throw err;
@@ -67,7 +60,7 @@ async function sendRentalConfirmation({ toEmail, renterName, productName, durati
   `;
 
   try {
-    await sendBrevoEmail({
+    await sendEmail({
       toEmail,
       subject: `Rental Confirmed: ${productName}`,
       html
@@ -95,7 +88,7 @@ async function sendRentalRejection({ toEmail, renterName, productName }) {
   `;
 
   try {
-    await sendBrevoEmail({
+    await sendEmail({
       toEmail,
       subject: `Rental Update: ${productName}`,
       html
@@ -127,14 +120,14 @@ async function sendOtpEmail({ toEmail, otp }) {
   `;
 
   try {
-    await sendBrevoEmail({
+    await sendEmail({
       toEmail,
       subject: `Your Verification Code: ${otp}`,
       html
     });
     console.log(`[Email] OTP sent to ${toEmail}`);
   } catch (err) {
-    console.error("[Email] Failed to send OTP via Brevo:", err.message);
+    console.error("[Email] Failed to send OTP:", err.message);
   }
 }
 
@@ -156,7 +149,7 @@ async function sendRentalPlaced({ toEmail, renterName, productName }) {
   `;
 
   try {
-    await sendBrevoEmail({
+    await sendEmail({
       toEmail,
       subject: `Rental Request Placed: ${productName}`,
       html
@@ -184,7 +177,7 @@ async function sendOwnerNewRequest({ toEmail, ownerName, renterName, productName
   `;
 
   try {
-    await sendBrevoEmail({
+    await sendEmail({
       toEmail,
       subject: `New Rental Request for ${productName}`,
       html

@@ -123,7 +123,9 @@ router.post("/", protect, async (req, res) => {
 // ── GET /api/rentals — Renter's own rentals ───────────────────────────
 router.get("/", protect, async (req, res) => {
   try {
-    const rentals = await Rental.find({ user: req.user }).sort({ createdAt: -1 });
+    const rentals = await Rental.find({ user: req.user })
+      .populate("owner", "name email phone")
+      .sort({ createdAt: -1 });
     res.json(rentals);
   } catch (error) {
     res.status(500).json({ message: "Server error" });

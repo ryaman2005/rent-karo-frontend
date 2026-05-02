@@ -159,6 +159,15 @@ function MyRentals() {
                       <span className="font-semibold">₹{item.deposit}</span>
                     </div>
                   </div>
+
+                  {/* Owner Contact */}
+                  {item.status === "confirmed" && item.owner && (
+                    <div className="bg-[hsl(var(--primary))]/10 border border-[hsl(var(--primary))]/20 rounded-xl p-3 mb-5 flex flex-col justify-center">
+                      <p className="text-xs font-semibold text-[hsl(var(--primary))] mb-0.5 uppercase tracking-wide">Owner Contact</p>
+                      <p className="text-sm text-[hsl(var(--foreground))] font-medium">{item.owner.name}</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">{item.owner.phone || item.owner.email}</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Return Confirm */}
