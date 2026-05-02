@@ -153,14 +153,14 @@ export default function ChatModal({ rental, targetUser, onClose }) {
               const isMe = senderId === currentUser._id;
               return (
                 <div key={msg._id || i} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                  <span className="text-[10px] mb-1 px-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
+                  <span className="text-[10px] mb-1 px-1 font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>
                     {senderName} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <div className={`px-4 py-2.5 rounded-2xl max-w-[80%] text-sm ${
+                  <div className={`px-4 py-2.5 max-w-[85%] text-sm shadow-sm ${
                     isMe 
-                    ? "bg-[hsl(var(--primary))] text-white rounded-tr-sm" 
-                    : "bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-tl-sm"
-                  }`} style={isMe ? {} : { color: 'hsl(var(--foreground))' }}>
+                    ? "bg-[hsl(var(--primary))] text-white rounded-2xl rounded-tr-sm" 
+                    : "bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-2xl rounded-tl-sm text-[hsl(var(--foreground))]"
+                  }`}>
                     {msg.text}
                   </div>
                 </div>
@@ -171,20 +171,20 @@ export default function ChatModal({ rental, targetUser, onClose }) {
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSend} className="p-4 bg-[hsl(var(--card))] border-t border-[hsl(var(--border))] flex gap-2">
+        <form onSubmit={handleSend} className="p-4 bg-[hsl(var(--card))] border-t border-[hsl(var(--border))] flex gap-3 items-center">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-[hsl(var(--muted))] border-none text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[hsl(var(--ring))] text-sm"
+            className="flex-1 bg-transparent border border-[hsl(var(--border))] text-[hsl(var(--foreground))] rounded-full px-5 py-2.5 focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-1 focus:ring-[hsl(var(--primary))] transition-all text-sm placeholder:text-[hsl(var(--muted-foreground))]"
           />
           <button
             type="submit"
             disabled={!text.trim() || sending}
-            className="bg-[hsl(var(--primary))] text-white p-2.5 rounded-xl hover:bg-[hsl(var(--primary)/0.08)]0 transition disabled:opacity-50 flex items-center justify-center"
+            className="bg-[hsl(var(--primary))] text-white w-10 h-10 rounded-full hover:shadow-lg hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center flex-shrink-0"
           >
-            {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+            {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={16} className="-ml-0.5" />}
           </button>
         </form>
       </div>
