@@ -20,7 +20,18 @@ const server = http.createServer(app);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || origin === FRONTEND_URL || origin.endsWith(".vercel.app") || origin.startsWith("http://localhost")) {
+    const allowedOrigins = [
+      FRONTEND_URL,
+      "https://rentkaro.shop",
+      "https://www.rentkaro.shop"
+    ];
+    
+    if (
+      !origin || 
+      allowedOrigins.includes(origin) || 
+      origin.endsWith(".vercel.app") || 
+      origin.startsWith("http://localhost")
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
