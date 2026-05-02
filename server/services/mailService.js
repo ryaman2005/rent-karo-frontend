@@ -1,30 +1,36 @@
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
-// Use nodemailer with Gmail since the user's Gmail is verified and works
-const transporter = nodemailer.createTransport({
-  pool: true,
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Use Brevo API via axios to ensure compatibility across all Node.js versions
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+
+// Brevo requires sending from the verified email
+const SENDER_EMAIL = "girrajbohra50@gmail.com";
 
 async function sendEmail({ toEmail, subject, html }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.error("[Email] EMAIL_USER or EMAIL_PASS not found! Email not sent.");
+  if (!BREVO_API_KEY) {
+    console.error("[Email] BREVO_API_KEY not found! Email not sent.");
     return;
   }
 
   try {
-    await transporter.sendMail({
-      from: `"rentKaro" <${process.env.EMAIL_USER}>`,
-      to: toEmail,
-      subject: subject,
-      html: html,
-    });
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: { email: SENDER_EMAIL, name: "rentKaro" },
+        to: [{ email: toEmail }],
+        subject: subject,
+        htmlContent: html,
+      },
+      {
+        headers: {
+          "api-key": BREVO_API_KEY,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      }
+    );
   } catch (err) {
-    console.error("[Email] Error:", err.message);
+    console.error("[Email] Error:", err.response?.data?.message || err.message);
     throw err;
   }
 }
