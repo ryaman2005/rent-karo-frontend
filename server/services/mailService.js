@@ -1,34 +1,36 @@
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
-// ── SMTP2GO Configuration ──
-// Requires SMTP_USER and SMTP_PASS in your .env file
-const transporter = nodemailer.createTransport({
-  host: "mail.smtp2go.com",
-  port: 2525, // 2525, 8465, or 587 are commonly used for SMTP2GO
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+// Use Brevo API via axios to ensure compatibility across all Node.js versions
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
-const SENDER_EMAIL = process.env.SENDER_EMAIL || "girrajbohra50@gmail.com";
+// Brevo requires sending from the verified email
+const SENDER_EMAIL = "girrajbohra50@gmail.com";
 
 async function sendEmail({ toEmail, subject, html }) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.error("[Email] SMTP_USER or SMTP_PASS not found! Email not sent.");
+  if (!BREVO_API_KEY) {
+    console.error("[Email] BREVO_API_KEY not found! Email not sent.");
     return;
   }
 
   try {
-    const info = await transporter.sendMail({
-      from: `"rentKaro" <${SENDER_EMAIL}>`,
-      to: toEmail,
-      subject: subject,
-      html: html,
-    });
-    return info;
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: { email: SENDER_EMAIL, name: "rentKaro" },
+        to: [{ email: toEmail }],
+        subject: subject,
+        htmlContent: html,
+      },
+      {
+        headers: {
+          "api-key": BREVO_API_KEY,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      }
+    );
   } catch (err) {
-    console.error("[Email] Error sending mail:", err.message);
+    console.error("[Email] Error:", err.response?.data?.message || err.message);
     throw err;
   }
 }
