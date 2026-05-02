@@ -56,10 +56,14 @@ export default function ChatModal({ rental, targetUser, onClose }) {
       // Check if message belongs to this view (rental match index OR DM match)
       if (rental && newMessage.rentalId === rentalId) {
         setMessages((prev) => [...prev, newMessage]);
-      } else if (!rental && !newMessage.rentalId) {
+      } else if (!rental) {
         // For DMs, verify sender/receiver match this thread
-        const senderMatch = [newMessage.sender._id, newMessage.sender].includes(currentUser._id) || [newMessage.sender._id, newMessage.sender].includes(targetUser._id);
-        const receiverMatch = [newMessage.receiver._id, newMessage.receiver].includes(currentUser._id) || [newMessage.receiver._id, newMessage.receiver].includes(targetUser._id);
+        const senderId = typeof newMessage.sender === "object" ? newMessage.sender._id : newMessage.sender;
+        const receiverId = typeof newMessage.receiver === "object" ? newMessage.receiver._id : newMessage.receiver;
+
+        const senderMatch = [senderId].includes(currentUser._id) || [senderId].includes(targetUser._id);
+        const receiverMatch = [receiverId].includes(currentUser._id) || [receiverId].includes(targetUser._id);
+        
         if (senderMatch && receiverMatch) {
           setMessages((prev) => [...prev, newMessage]);
         }
