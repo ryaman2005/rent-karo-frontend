@@ -25,6 +25,7 @@ function Navbar() {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [kycCount, setKycCount] = useState(0);
+  const [toast, setToast] = useState(null);
   const panelRef = useRef(null);
 
   // Re-sync user and connect socket
@@ -96,12 +97,24 @@ function Navbar() {
       setKycCount(prev => prev + 1);
     };
 
+    const handleStatusUpdate = (data) => {
+      // Display a global toast notification
+      setToast({
+        title: "Rental Update",
+        message: `Your request for ${data.productName} was ${data.status}!`,
+        type: data.status === "confirmed" ? "success" : "error",
+      });
+      setTimeout(() => setToast(null), 6000);
+    };
+
     socket.on("new_rental_request", handleNewRequest);
     socket.on("new_kyc_submission", handleNewKyc);
+    socket.on("rental_status_update", handleStatusUpdate);
 
     return () => {
       socket.off("new_rental_request", handleNewRequest);
       socket.off("new_kyc_submission", handleNewKyc);
+      socket.off("rental_status_update", handleStatusUpdate);
     };
   }, []);
 
@@ -150,6 +163,34 @@ function Navbar() {
         scrolled ? "glass-cinematic" : "bg-transparent"
       }`}
     >
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 animate-slide-down">
+          <div className={`flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl border ${
+            toast.type === "success" 
+            ? "bg-emerald-50 text-emerald-900 border-emerald-200" 
+            : "bg-red-50 text-red-900 border-red-200"
+          }`}>
+            {toast.type === "success" ? (
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-600">
+                <Package size={16} />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 text-red-600">
+                <X size={16} />
+              </div>
+            )}
+            <div className="pr-2">
+              <p className="text-sm font-bold leading-tight">{toast.title}</p>
+              <p className="text-xs opacity-90 mt-0.5">{toast.message}</p>
+            </div>
+            <button onClick={() => setToast(null)} className="ml-2 p-1 hover:bg-black/5 rounded-lg transition-colors">
+              <X size={14} className="opacity-50" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top accent line */}
       <div
         className="h-px w-full transition-all duration-500"
