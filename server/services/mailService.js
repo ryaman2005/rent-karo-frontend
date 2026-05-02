@@ -4,7 +4,7 @@ const axios = require("axios");
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 // Brevo requires sending from the verified email
-const SENDER_EMAIL = process.env.SENDER_EMAIL || "support@rentkaro.shop";
+const SENDER_EMAIL = "girrajbohra50@gmail.com";
 
 async function sendEmail({ toEmail, subject, html }) {
   if (!BREVO_API_KEY) {
